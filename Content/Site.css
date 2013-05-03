@@ -1,0 +1,16 @@
+﻿body {
+    font-size: .85em;
+    font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
+    color: #232323;
+    background-color: #fff;
+    margin: 2em;
+}
+
+header, footer, nav, section {
+    display: block;
+}
+
+canvas {
+    border: 1px dashed #000000;    
+    width: 100%;
+}
