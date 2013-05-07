@@ -7,11 +7,11 @@
     <title>Typescript particles</title>
 
     <link rel="stylesheet" href="Content/Site.css" />
-
-    <script type="text/javascript" src="Scripts/jquery-1.9.1.min.js"></script>    
-    <script type="text/javascript" src="Scripts/knockout-2.2.1.js"></script>
+    
+    <script type="text/javascript" src="Scripts/libs/knockout-2.2.1.min.js"></script>
+    <script type="text/javascript" src="Scripts/libs/jquery-1.9.1.min.js"></script>    
     <script type="text/javascript" src="Scripts/animation.js"></script>
-    <script type="text/javascript" src="Scripts/particles.js"></script>
+    <script data-main="Scripts/app" type="text/javascript" src="Scripts/libs/require.min.js"></script>
 </head>
 <body>
     <h1>Typescript particles</h1>
@@ -24,8 +24,7 @@
     <canvas id="particlesCanvas"></canvas>
 
     <div>
-        <button data-bind="enable: !animating(), click: startAnimating">Start</button>
-        <button data-bind="enable: animating, click: stopAnimating">Stop</button>
+        <button data-bind="click: toggleAnimating, text: animating() ? 'Pause' : 'Resume'"></button>
         <button data-bind="click: refresh">Refresh</button>
     </div>
 </body>
