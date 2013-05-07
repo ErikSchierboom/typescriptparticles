@@ -23,3 +23,43 @@ export class Drawable implements IDrawable {
     public draw() { }
 }
 
+/**
+ * Base class for drawables can also be animated.
+ */
+export class AnimatedDrawable extends Drawable implements IAnimatable {
+
+    // The handle returned by the requestAnimationFrame method. We will
+    // be using this handle to allow animation to be stopped.
+    private animationHandle: number;
+
+    // Indicates if animating is already happening
+    private animating: bool;
+
+    constructor(public ctx: CanvasRenderingContext2D) {
+        super(ctx);
+    }
+
+    public startAnimating() {
+
+        // Request an animation frame for the current method. 
+        // This will cause this method to be called to render
+        // in around 60 FPS
+        this.animationHandle = window.requestAnimationFrame(function () => {
+            this.startAnimating()
+        });
+
+        // Draw to the screen
+        this.draw();
+    }
+
+    public stopAnimating() {
+        window.cancelAnimationFrame(this.animationHandle);
+    }
+}
+
+/**
+ * A simple point class.
+ */
+export class Point {
+    constructor(public x: number = 0, public y: number = 0) { }
+}
