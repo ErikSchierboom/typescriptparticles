@@ -1,12 +1,14 @@
-define(["require", "exports", 'particles'], function(require, exports, __Particles__) {
+define(["require", "exports", 'particles', 'particle'], function(require, exports, __Particles__, __Particle__) {
     
     var Particles = __Particles__;
+
+    var Particle = __Particle__;
 
     var AppViewModel = (function () {
         function AppViewModel() {
             var _this = this;
-            this.particleTypes = ko.observableArray(Particles.ParticleType.particleTypes);
-            this.selectedParticleType = ko.observable(Particles.ParticleType.BouncingBall);
+            this.particleTypes = ko.observableArray(Particle.ParticleType.particleTypes);
+            this.selectedParticleType = ko.observable(Particle.ParticleType.BouncingBall);
             this.animating = ko.observable(false);
             var canvas = $('#particlesCanvas')[0];
             var ctx = canvas.getContext('2d');

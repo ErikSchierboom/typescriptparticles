@@ -32,4 +32,14 @@ define(["require", "exports"], function(require, exports) {
         return AnimatedDrawable;
     })(Drawable);
     exports.AnimatedDrawable = AnimatedDrawable;    
+    var Point = (function () {
+        function Point(x, y) {
+            if (typeof x === "undefined") { x = 0; }
+            if (typeof y === "undefined") { y = 0; }
+            this.x = x;
+            this.y = y;
+        }
+        return Point;
+    })();
+    exports.Point = Point;    
 })

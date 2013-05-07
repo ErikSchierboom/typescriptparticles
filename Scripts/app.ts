@@ -5,6 +5,7 @@
 
 import Drawing = module('drawing');
 import Particles = module('particles');
+import Particle = module('particle');
 
 /**
  * This class will serve as the view model for our app.
@@ -15,10 +16,10 @@ class AppViewModel {
     private particles: Particles.Particles;
 
     // This observable contains all the particle types
-    public particleTypes = ko.observableArray(Particles.ParticleType.particleTypes);
+    public particleTypes = ko.observableArray(Particle.ParticleType.particleTypes);
 
     // This observable contains the selected particle type
-    public selectedParticleType = ko.observable(Particles.ParticleType.BouncingBall);
+    public selectedParticleType = ko.observable(Particle.ParticleType.BouncingBall);
 
     // This observable will indicate if we are currently animating
     public animating = ko.observable(false);
