@@ -1,5 +1,19 @@
 ﻿/// <reference path="typings/jquery.d.ts" />
 
+var milliSecondsPerSecond = 1000;
+var framesPerSecond = 60;
+
+var requestAnimFrame: (callback: () => void ) => void = (function () {
+    return window.requestAnimationFrame ||
+    (<any>window).webkitRequestAnimationFrame ||
+    (<any>window).mozRequestAnimationFrame ||
+    (<any>window).oRequestAnimationFrame ||
+    window.msRequestAnimationFrame ||
+    function (callback) {
+        window.setTimeout(callback, milliSecondsPerSecond / framesPerSecond, new Date().getTime());
+    };
+})();
+
 /**
  * Basic interface for class that can drawing themselves to the screen.
  */
@@ -49,7 +63,7 @@ class Particle extends Drawable {
 }
 
 /**
- * This class extends 
+ * This class extends the Particle class to creating a bouncing ball particle.
  */
 class BouncingBallParticle extends Particle {
     constructor(public ctx: CanvasRenderingContext2D) {
@@ -67,7 +81,7 @@ class BouncingBallParticle extends Particle {
         this.vx = (Math.random() * 2 - 1) * 40;
         this.vy = (Math.random() * 2 - 1) * 40;
 
-        this.dt = 0.05;
+        this.dt = 1.0 / framesPerSecond;
 
         // Give the particle a random color
         this.color = 'hsl(' + Math.floor(Math.random() * 360) + ',100%, 50%)';
@@ -76,6 +90,91 @@ class BouncingBallParticle extends Particle {
     public update() {
         super.update();
         
+        // Here we need to do some additional processing to ensure that the
+        // bouncing ball particles actually bounce when they reach the borders
+        // of the canvas
+
+        if (this.shouldReverseHorizontalDirection) {
+            this.vx *= -1;
+        }
+
+        if (this.shouldReverseVerticalDirection) {
+            this.vy *= -1;
+        }
+    }
+
+    /**
+     * Draw the bouncing ball to the canvas.
+     */
+    public draw() {
+        this.ctx.beginPath();
+        this.ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
+        this.ctx.closePath();
+        this.ctx.fillStyle = this.color;
+        this.ctx.fill();
+    }
+
+    // Properties used to retrieve the movevement direction of the particle
+    get movingToLeft(): bool { return this.vx < 0; }
+    get movingToRight(): bool { return this.vx > 0; }
+    get movingToTop(): bool { return this.vy < 0; }
+    get movingToBottom(): bool { return this.vy > 0; }
+
+    // Properties used to determine if the bouncing ball is over a border
+    get overLeftBorder(): bool { return this.x <= this.radius; }
+    get overRightBorder(): bool { return this.x >= this.ctx.canvas.width - this.radius; }
+    get overTopBorder(): bool { return this.y <= this.radius; }
+    get overBottomBorder(): bool { return this.y >= this.ctx.canvas.height - this.radius; }
+
+    /**
+     * Indicates if the particle should reverse its horizontal direction due
+     * to the particle moving over the utmost left or right of the canvas.
+     */
+    get shouldReverseHorizontalDirection(): bool {
+        return (this.movingToLeft && this.overLeftBorder) ||
+               (this.movingToRight && this.overRightBorder);
+    }
+
+    /**
+     * Indicates if the particle should reverse its vertital direction due
+     * to the particle moving over the utmost top or bottom of the canvas.
+     */
+    get shouldReverseVerticalDirection(): bool {
+        return (this.movingToTop && this.overTopBorder) ||
+               (this.movingToBottom && this.overBottomBorder);
+    }
+}
+
+
+
+/**
+ * This class extends the Particle 
+ */
+class FireworkParticle extends Particle {
+    constructor(public ctx: CanvasRenderingContext2D) {
+        super(ctx);
+
+        // Generate a random radius to create different sized circles
+        this.radius = Math.random() * 20 + 5;
+
+        // Give the particle a random coordinate that fits on the canvas
+        this.x = Math.random() * (this.ctx.canvas.width - this.radius * 2) + this.radius;
+        this.y = Math.random() * (this.ctx.canvas.height - this.radius * 2) + this.radius;
+
+        // Create random x and y vectors that will determine where the
+        // particle will be moving to
+        this.vx = (Math.random() * 2 - 1) * 40;
+        this.vy = (Math.random() * 2 - 1) * 40;
+
+        this.dt = 1.0 / framesPerSecond;
+
+        // Give the particle a random color
+        this.color = 'hsl(' + Math.floor(Math.random() * 360) + ',100%, 50%)';
+    }
+
+    public update() {
+        super.update();
+
         // Here we need to do some additional processing to ensure that the
         // bouncing ball particles actually bounce when they reach the borders
         // of the canvas
@@ -208,6 +307,16 @@ class Particles extends Drawable {
             this.particles[i].draw();
         }
     }
+        
+    public animate() {
+
+        // Request an animation frame for the current method. 
+        // This will cause this method to be called to render
+        // in around 60 FPS
+        requestAnimFrame(function () => { this.animate() });
+
+        this.draw();
+    }
 }
 
 $(document).ready(function () {
@@ -218,15 +327,9 @@ $(document).ready(function () {
     // Get the 2D rendering context for the canvas
     var ctx = canvas.getContext('2d');
     
-    // Create the particles instance which will be drawing the individual
-    // particles to the canvas
+    // Create the particles instance and start the animation
     var particles = new Particles(ctx);
-        
-    // Define the interval for the particles to be redrawn
-    var redrawParticlesIntervalInMilliseconds = 50;
-
-    // Set an interval that will redraw the particles again and again
-    setInterval(function () { particles.draw() }, redrawParticlesIntervalInMilliseconds);
+    particles.animate();
 
     // Register an event handler that lets the user refresh the particles that are rendered
     $('#refresh').on('click', function () {

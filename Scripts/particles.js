@@ -3,6 +3,13 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+var milliSecondsPerSecond = 1000;
+var framesPerSecond = 60;
+var requestAnimFrame = (function () {
+    return window.requestAnimationFrame || (window).webkitRequestAnimationFrame || (window).mozRequestAnimationFrame || (window).oRequestAnimationFrame || window.msRequestAnimationFrame || function (callback) {
+        window.setTimeout(callback, milliSecondsPerSecond / framesPerSecond, new Date().getTime());
+    };
+})();
 var Drawable = (function () {
     function Drawable(ctx) {
         this.ctx = ctx;
@@ -47,7 +54,7 @@ var BouncingBallParticle = (function (_super) {
         this.y = Math.random() * (this.ctx.canvas.height - this.radius * 2) + this.radius;
         this.vx = (Math.random() * 2 - 1) * 40;
         this.vy = (Math.random() * 2 - 1) * 40;
-        this.dt = 0.05;
+        this.dt = 1.0 / framesPerSecond;
         this.color = 'hsl(' + Math.floor(Math.random() * 360) + ',100%, 50%)';
     }
     BouncingBallParticle.prototype.update = function () {
@@ -138,6 +145,107 @@ var BouncingBallParticle = (function (_super) {
     });
     return BouncingBallParticle;
 })(Particle);
+var FireworkParticle = (function (_super) {
+    __extends(FireworkParticle, _super);
+    function FireworkParticle(ctx) {
+        _super.call(this, ctx);
+        this.ctx = ctx;
+        this.radius = Math.random() * 20 + 5;
+        this.x = Math.random() * (this.ctx.canvas.width - this.radius * 2) + this.radius;
+        this.y = Math.random() * (this.ctx.canvas.height - this.radius * 2) + this.radius;
+        this.vx = (Math.random() * 2 - 1) * 40;
+        this.vy = (Math.random() * 2 - 1) * 40;
+        this.dt = 1.0 / framesPerSecond;
+        this.color = 'hsl(' + Math.floor(Math.random() * 360) + ',100%, 50%)';
+    }
+    FireworkParticle.prototype.update = function () {
+        _super.prototype.update.call(this);
+        if(this.shouldReverseHorizontalDirection) {
+            this.vx *= -1;
+        }
+        if(this.shouldReverseVerticalDirection) {
+            this.vy *= -1;
+        }
+    };
+    FireworkParticle.prototype.draw = function () {
+        this.ctx.beginPath();
+        this.ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
+        this.ctx.closePath();
+        this.ctx.fillStyle = this.color;
+        this.ctx.fill();
+    };
+    Object.defineProperty(FireworkParticle.prototype, "movingToLeft", {
+        get: function () {
+            return this.vx < 0;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(FireworkParticle.prototype, "movingToRight", {
+        get: function () {
+            return this.vx > 0;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(FireworkParticle.prototype, "movingToTop", {
+        get: function () {
+            return this.vy < 0;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(FireworkParticle.prototype, "movingToBottom", {
+        get: function () {
+            return this.vy > 0;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(FireworkParticle.prototype, "overLeftBorder", {
+        get: function () {
+            return this.x <= this.radius;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(FireworkParticle.prototype, "overRightBorder", {
+        get: function () {
+            return this.x >= this.ctx.canvas.width - this.radius;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(FireworkParticle.prototype, "overTopBorder", {
+        get: function () {
+            return this.y <= this.radius;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(FireworkParticle.prototype, "overBottomBorder", {
+        get: function () {
+            return this.y >= this.ctx.canvas.height - this.radius;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(FireworkParticle.prototype, "shouldReverseHorizontalDirection", {
+        get: function () {
+            return (this.movingToLeft && this.overLeftBorder) || (this.movingToRight && this.overRightBorder);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(FireworkParticle.prototype, "shouldReverseVerticalDirection", {
+        get: function () {
+            return (this.movingToTop && this.overTopBorder) || (this.movingToBottom && this.overBottomBorder);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return FireworkParticle;
+})(Particle);
 var ParticleType = (function () {
     function ParticleType() { }
     ParticleType.BouncingBall = "BouncingBall";
@@ -183,16 +291,20 @@ var Particles = (function (_super) {
             this.particles[i].draw();
         }
     };
+    Particles.prototype.animate = function () {
+        var _this = this;
+        requestAnimFrame(function () {
+            _this.animate();
+        });
+        this.draw();
+    };
     return Particles;
 })(Drawable);
 $(document).ready(function () {
     var canvas = $('#particlesCanvas')[0];
     var ctx = canvas.getContext('2d');
     var particles = new Particles(ctx);
-    var redrawParticlesIntervalInMilliseconds = 50;
-    setInterval(function () {
-        particles.draw();
-    }, redrawParticlesIntervalInMilliseconds);
+    particles.animate();
     $('#refresh').on('click', function () {
         particles.refresh();
     });
