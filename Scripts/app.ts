@@ -29,9 +29,8 @@ class AppViewModel {
         var canvas = <HTMLCanvasElement>$('#particlesCanvas')[0];
         var ctx = canvas.getContext('2d');
 
-        // Create the particles instance and start animating
+        // Create the particles
         this.particles = new Particles.Particles(ctx);
-        this.startAnimating();
 
         // Update the particle type when the user has changed it and then reset
         // the rendered particles
@@ -39,6 +38,8 @@ class AppViewModel {
             this.particles.particleType = newParticleType;
             this.reset();
         });
+                
+        this.startAnimating();
     }
 
     /**

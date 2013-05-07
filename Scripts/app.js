@@ -13,11 +13,11 @@ define(["require", "exports", 'particles', 'particle'], function(require, export
             var canvas = $('#particlesCanvas')[0];
             var ctx = canvas.getContext('2d');
             this.particles = new Particles.Particles(ctx);
-            this.startAnimating();
             this.selectedParticleType.subscribe(function (newParticleType) {
                 _this.particles.particleType = newParticleType;
                 _this.reset();
             });
+            this.startAnimating();
         }
         AppViewModel.prototype.toggleAnimating = function () {
             if(this.animating()) {
