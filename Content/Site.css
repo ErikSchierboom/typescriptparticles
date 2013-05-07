@@ -12,5 +12,5 @@ header, footer, nav, section {
 
 canvas {
     border: 1px dashed #000000;    
-    width: 100%;
+    width: 50%;
 }

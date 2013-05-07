@@ -1,74 +1,208 @@
 ﻿/// <reference path="typings/jquery.d.ts" />
 
-// Return a pseudo-random number between -1 and 1
-function GenerateRandomNumber() {
-    return Math.random() * 2 - 1;
-};
-
+/**
+ * Basic interface for class that can drawing themselves to the screen.
+ */
 interface IDrawable {
     draw();
 }
 
+/**
+ * Base class for classes that want to draw to a canvas.
+ */
 class Drawable implements IDrawable {
-    constructor(public canvas: HTMLCanvasElement, public ctx: CanvasRenderingContext2D) {}
-    draw() {}
+    constructor(public ctx: CanvasRenderingContext2D) { }
+
+    // We don't draw anything here, this should be implemented by child classes
+    public draw() { }
 }
 
+/**
+ * This class forms the base of any particle implementation. It defines a set of properties
+ * shared by all particles and some common methods and properties. It extends from the 
+ * Drawable class to render the particle to the screen.
+ */
 class Particle extends Drawable {
     x: number;
     y: number;
     vx: number;
     vy: number;
-    r: number;
+    radius: number;
     dt: number;
     color: string;
 
-    constructor(public canvas: HTMLCanvasElement, public ctx: CanvasRenderingContext2D) {
-        super(canvas, ctx);
+    constructor(public ctx: CanvasRenderingContext2D) {
+        super(ctx);
+    }
 
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.vx = GenerateRandomNumber() * 30;
-        this.vy = GenerateRandomNumber() * 30;
-        this.r = Math.random() * 20 + 5;
+    /**
+     * Update the particle's coordinates.
+     */
+    public update() {
+        this.x += this.horizontalMovement;
+        this.y += this.verticalMovement;
+    }
+
+    // Properties for retrieving the horizontal and vertical movement
+    get horizontalMovement(): number { return this.vx * this.dt; }
+    get verticalMovement(): number { return this.vy * this.dt; }
+}
+
+/**
+ * This class extends 
+ */
+class BouncingBallParticle extends Particle {
+    constructor(public ctx: CanvasRenderingContext2D) {
+        super(ctx);
+
+        // Generate a random radius to create different sized circles
+        this.radius = Math.random() * 20 + 5;
+
+        // Give the particle a random coordinate that fits on the canvas
+        this.x = Math.random() * (this.ctx.canvas.width - this.radius * 2) + this.radius;
+        this.y = Math.random() * (this.ctx.canvas.height - this.radius * 2) + this.radius;
+
+        // Create random x and y vectors that will determine where the
+        // particle will be moving to
+        this.vx = (Math.random() * 2 - 1) * 40;
+        this.vy = (Math.random() * 2 - 1) * 40;
+
         this.dt = 0.05;
+
+        // Give the particle a random color
         this.color = 'hsl(' + Math.floor(Math.random() * 360) + ',100%, 50%)';
     }
 
     public update() {
-        this.x += this.vx * this.dt;
-        this.y += this.vy * this.dt;
+        super.update();
+        
+        // Here we need to do some additional processing to ensure that the
+        // bouncing ball particles actually bounce when they reach the borders
+        // of the canvas
+
+        if (this.shouldReverseHorizontalDirection) {
+            this.vx *= -1;
+        }
+
+        if (this.shouldReverseVerticalDirection) {
+            this.vy *= -1;
+        }
     }
 
+    /**
+     * Draw the bouncing ball to the canvas.
+     */
     public draw() {
         this.ctx.beginPath();
-        this.ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2, false);
+        this.ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
         this.ctx.closePath();
         this.ctx.fillStyle = this.color;
         this.ctx.fill();
     }
-}
 
-class Particles extends Drawable {
-    particles: Particle[];
+    // Properties used to retrieve the movevement direction of the particle
+    get movingToLeft(): bool { return this.vx < 0; }
+    get movingToRight(): bool { return this.vx > 0; }
+    get movingToTop(): bool { return this.vy < 0; }
+    get movingToBottom(): bool { return this.vy > 0; }
 
-    constructor(public canvas: HTMLCanvasElement, public ctx: CanvasRenderingContext2D) {
-        super(canvas, ctx);
+    // Properties used to determine if the bouncing ball is over a border
+    get overLeftBorder(): bool { return this.x <= this.radius; }
+    get overRightBorder(): bool { return this.x >= this.ctx.canvas.width - this.radius; }
+    get overTopBorder(): bool { return this.y <= this.radius; }
+    get overBottomBorder(): bool { return this.y >= this.ctx.canvas.height - this.radius; }
 
-        this.particles = [];
-        this.addParticles(10);        
+    /**
+     * Indicates if the particle should reverse its horizontal direction due
+     * to the particle moving over the utmost left or right of the canvas.
+     */
+    get shouldReverseHorizontalDirection(): bool {
+        return (this.movingToLeft && this.overLeftBorder) ||
+               (this.movingToRight && this.overRightBorder);
     }
 
-    private addParticles(nmbr) {
-        for (var i = 0; i < nmbr; i++) {
-            var p = new Particle(this.canvas, this.ctx);
-            this.particles.push(p);
+    /**
+     * Indicates if the particle should reverse its vertital direction due
+     * to the particle moving over the utmost top or bottom of the canvas.
+     */
+    get shouldReverseVerticalDirection(): bool {
+        return (this.movingToTop && this.overTopBorder) ||
+               (this.movingToBottom && this.overBottomBorder);
+    }
+}
+
+/**
+ * A simulated enumeration for the different particle types.
+ */
+class ParticleType {
+    static BouncingBall: string = "BouncingBall";
+}
+
+/**
+ * A class to create particles depending on the particle type.
+ */
+class ParticleFactory {
+    constructor(public ctx: CanvasRenderingContext2D) { }
+
+    /**
+     * Create a particle based on the specified particle type.
+     */
+    public create(particleType: string) {
+        if (particleType == ParticleType.BouncingBall) {
+            return new BouncingBallParticle(this.ctx);
+        }
+
+        throw 'Invalid particle type specified';
+    }
+}
+
+/**
+ * This class can render a collection of particles to the screen.
+ */
+class Particles extends Drawable {
+
+    // The number of particles to render
+    numberOfParticlesToRender: number = 10;
+
+    // The particles that will be rendered
+    particles: Particle[];
+
+    // The factory for creating the particles
+    particleFactory: ParticleFactory;
+
+    constructor(public ctx: CanvasRenderingContext2D, private particleType: string = ParticleType.BouncingBall) {
+        super(ctx);
+
+        // Create the particle factory first before we will use it to create the particles
+        this.particleFactory = new ParticleFactory(ctx);
+
+        // Create the particles
+        this.createParticles();
+    }
+
+    private createParticles() {
+
+        // Create the array that will hold all the particles
+        this.particles = [];
+
+        // Add the specified number of particles
+        for (var i = 0; i < this.numberOfParticlesToRender; ++i) {            
+            this.particles.push(this.particleFactory.create(this.particleType));
         };
-    };    
+    };
+
+    public refresh() {
+        
+        // Refresh the particles by re-creating them
+        this.createParticles();
+    };
 
     public draw() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
+        // Start with clearing the rendering context
+        this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+
+        // Render all particles after updating them first (which will update their coordinates, etc.)
         for (var i = 0; i < this.particles.length; i++) {
             this.particles[i].update();
             this.particles[i].draw();
@@ -77,19 +211,25 @@ class Particles extends Drawable {
 }
 
 $(document).ready(function () {
-    
+
     // Get the HTMLCanvasElement on which we will be drawing our particles
     var canvas = <HTMLCanvasElement>$('#particlesCanvas')[0];
 
-    // Get the 2D rendering context from the canvas
+    // Get the 2D rendering context for the canvas
     var ctx = canvas.getContext('2d');
     
-    // Create the particles, which we will be rendering on the canvas
-    var particles = new Particles(canvas, ctx);    
-
+    // Create the particles instance which will be drawing the individual
+    // particles to the canvas
+    var particles = new Particles(ctx);
+        
     // Define the interval for the particles to be redrawn
     var redrawParticlesIntervalInMilliseconds = 50;
 
     // Set an interval that will redraw the particles again and again
     setInterval(function () { particles.draw() }, redrawParticlesIntervalInMilliseconds);
+
+    // Register an event handler that lets the user refresh the particles that are rendered
+    $('#refresh').on('click', function () {
+        particles.refresh();
+    });
 });
