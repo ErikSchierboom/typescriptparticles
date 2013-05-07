@@ -3,13 +3,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var milliSecondsPerSecond = 1000;
 var framesPerSecond = 60;
-var requestAnimFrame = (function () {
-    return window.requestAnimationFrame || (window).webkitRequestAnimationFrame || (window).mozRequestAnimationFrame || (window).oRequestAnimationFrame || window.msRequestAnimationFrame || function (callback) {
-        window.setTimeout(callback, milliSecondsPerSecond / framesPerSecond, new Date().getTime());
-    };
-})();
 var Drawable = (function () {
     function Drawable(ctx) {
         this.ctx = ctx;
@@ -18,6 +12,24 @@ var Drawable = (function () {
     };
     return Drawable;
 })();
+var AnimatedDrawable = (function (_super) {
+    __extends(AnimatedDrawable, _super);
+    function AnimatedDrawable(ctx) {
+        _super.call(this, ctx);
+        this.ctx = ctx;
+    }
+    AnimatedDrawable.prototype.startAnimating = function () {
+        var _this = this;
+        this.animationHandle = window.requestAnimationFrame(function () {
+            _this.startAnimating();
+        });
+        this.draw();
+    };
+    AnimatedDrawable.prototype.stopAnimating = function () {
+        window.cancelAnimationFrame(this.animationHandle);
+    };
+    return AnimatedDrawable;
+})(Drawable);
 var Particle = (function (_super) {
     __extends(Particle, _super);
     function Particle(ctx) {
@@ -291,21 +303,30 @@ var Particles = (function (_super) {
             this.particles[i].draw();
         }
     };
-    Particles.prototype.animate = function () {
-        var _this = this;
-        requestAnimFrame(function () {
-            _this.animate();
-        });
-        this.draw();
-    };
     return Particles;
-})(Drawable);
+})(AnimatedDrawable);
+var ViewModel = (function () {
+    function ViewModel() {
+        this.animating = ko.observable(false);
+        var canvas = $('#particlesCanvas')[0];
+        var ctx = canvas.getContext('2d');
+        this.particles = new Particles(ctx);
+        this.startAnimating();
+    }
+    ViewModel.prototype.startAnimating = function () {
+        this.animating(true);
+        this.particles.startAnimating();
+    };
+    ViewModel.prototype.stopAnimating = function () {
+        this.particles.stopAnimating();
+        this.animating(false);
+    };
+    ViewModel.prototype.refresh = function () {
+        this.particles.refresh();
+    };
+    return ViewModel;
+})();
 $(document).ready(function () {
-    var canvas = $('#particlesCanvas')[0];
-    var ctx = canvas.getContext('2d');
-    var particles = new Particles(ctx);
-    particles.animate();
-    $('#refresh').on('click', function () {
-        particles.refresh();
-    });
+    var viewModel = new ViewModel();
+    ko.applyBindings(viewModel);
 });

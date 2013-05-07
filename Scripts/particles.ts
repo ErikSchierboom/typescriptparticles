@@ -1,24 +1,18 @@
 ﻿/// <reference path="typings/jquery.d.ts" />
+/// <reference path="typings/knockout.d.ts" />
 
-var milliSecondsPerSecond = 1000;
 var framesPerSecond = 60;
-
-var requestAnimFrame: (callback: () => void ) => void = (function () {
-    return window.requestAnimationFrame ||
-    (<any>window).webkitRequestAnimationFrame ||
-    (<any>window).mozRequestAnimationFrame ||
-    (<any>window).oRequestAnimationFrame ||
-    window.msRequestAnimationFrame ||
-    function (callback) {
-        window.setTimeout(callback, milliSecondsPerSecond / framesPerSecond, new Date().getTime());
-    };
-})();
 
 /**
  * Basic interface for class that can drawing themselves to the screen.
  */
 interface IDrawable {
     draw();
+}
+
+interface IAnimatable {
+    startAnimating();
+    stopAnimating();
 }
 
 /**
@@ -29,6 +23,40 @@ class Drawable implements IDrawable {
 
     // We don't draw anything here, this should be implemented by child classes
     public draw() { }
+}
+
+/**
+ * Base class for drawables can also be animated.
+ */
+class AnimatedDrawable extends Drawable implements IAnimatable {
+
+    // The handle returned by the requestAnimationFrame method. We will
+    // be using this handle to allow animation to be stopped.
+    private animationHandle: number;
+
+    // Indicates if animating is already happening
+    private animating: bool;
+
+    constructor(public ctx: CanvasRenderingContext2D) {
+        super(ctx);
+    }
+
+    public startAnimating() {
+
+        // Request an animation frame for the current method. 
+        // This will cause this method to be called to render
+        // in around 60 FPS
+        this.animationHandle = window.requestAnimationFrame(function () => {
+            this.startAnimating()
+        });
+
+        // Draw to the screen
+        this.draw();
+    }
+
+    public stopAnimating() {
+        window.cancelAnimationFrame(this.animationHandle);
+    }
 }
 
 /**
@@ -258,7 +286,7 @@ class ParticleFactory {
 /**
  * This class can render a collection of particles to the screen.
  */
-class Particles extends Drawable {
+class Particles extends AnimatedDrawable {
 
     // The number of particles to render
     numberOfParticlesToRender: number = 10;
@@ -307,32 +335,60 @@ class Particles extends Drawable {
             this.particles[i].draw();
         }
     }
-        
-    public animate() {
+}
 
-        // Request an animation frame for the current method. 
-        // This will cause this method to be called to render
-        // in around 60 FPS
-        requestAnimFrame(function () => { this.animate() });
+/**
+ * This class will serve as the view model for Knockout.
+ */
+class ViewModel {
 
-        this.draw();
+    // The particles that will be rendered to the screen
+    private particles: Particles;
+
+    // This observable will indicate if we are currently animating
+    public animating = ko.observable(false);    
+
+    constructor() {
+        // Get the HTMLCanvasElement on which we will be drawing our particles
+        var canvas = <HTMLCanvasElement>$('#particlesCanvas')[0];
+
+        // Get the 2D rendering context for the canvas
+        var ctx = canvas.getContext('2d');
+
+        // Create the particles instance so we have something to render
+        this.particles = new Particles(ctx);
+                
+        this.startAnimating();
+    }
+
+    /**
+     * Start animating the particles.
+     */
+    public startAnimating() {
+        this.animating(true);
+        this.particles.startAnimating();
+    }
+
+    /**
+     * Stop animating the particles.
+     */
+    public stopAnimating() {
+        this.particles.stopAnimating();
+        this.animating(false);
+    }
+
+    /**
+     * Refresh the particles that are rendered on the screen
+     */
+    public refresh() {
+        this.particles.refresh();
     }
 }
 
 $(document).ready(function () {
 
-    // Get the HTMLCanvasElement on which we will be drawing our particles
-    var canvas = <HTMLCanvasElement>$('#particlesCanvas')[0];
+    // Create the view model and apply its bindings to knockout
+    var viewModel = new ViewModel();
+    ko.applyBindings(viewModel);
 
-    // Get the 2D rendering context for the canvas
-    var ctx = canvas.getContext('2d');
-    
-    // Create the particles instance and start the animation
-    var particles = new Particles(ctx);
-    particles.animate();
-
-    // Register an event handler that lets the user refresh the particles that are rendered
-    $('#refresh').on('click', function () {
-        particles.refresh();
-    });
 });
