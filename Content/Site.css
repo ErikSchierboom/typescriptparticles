@@ -15,3 +15,11 @@ canvas {
     width: 700px;
     height: 300px;
 }
+
+ul, li {
+    padding-left: 0;
+}
+
+li {
+    display: inline;
+}

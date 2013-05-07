@@ -4,11 +4,18 @@ define(["require", "exports", 'particles'], function(require, exports, __Particl
 
     var AppViewModel = (function () {
         function AppViewModel() {
+            var _this = this;
+            this.particleTypes = ko.observableArray(Particles.ParticleType.particleTypes);
+            this.selectedParticleType = ko.observable(Particles.ParticleType.BouncingBall);
             this.animating = ko.observable(false);
             var canvas = $('#particlesCanvas')[0];
             var ctx = canvas.getContext('2d');
             this.particles = new Particles.Particles(ctx);
             this.startAnimating();
+            this.selectedParticleType.subscribe(function (newParticleType) {
+                _this.particles.particleType = newParticleType;
+                _this.reset();
+            });
         }
         AppViewModel.prototype.toggleAnimating = function () {
             if(this.animating()) {
@@ -25,7 +32,7 @@ define(["require", "exports", 'particles'], function(require, exports, __Particl
             this.particles.stopAnimating();
             this.animating(false);
         };
-        AppViewModel.prototype.refresh = function () {
+        AppViewModel.prototype.reset = function () {
             this.particles.refresh();
         };
         return AppViewModel;

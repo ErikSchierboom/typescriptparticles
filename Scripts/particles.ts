@@ -119,10 +119,52 @@ export class BouncingBallParticle extends Particle {
 }
 
 /**
+ * This class extends the Particle class to creating a firework particle.
+ */
+export class FireworkParticle extends Particle {
+    constructor(public ctx: CanvasRenderingContext2D) {
+        super(ctx);
+
+        // Generate a random radius to create different sized circles
+        this.radius = Math.random() * 20 + 5;
+
+        // Give the particle a random coordinate that fits on the canvas
+        this.x = this.ctx.canvas.width / 2;
+        this.y = this.ctx.canvas.height / 2;
+
+        // Create random x and y vectors that will determine where the
+        // particle will be moving to
+        this.vx = (Math.random() * 2 - 1) * 40;
+        this.vy = (Math.random() * 2 - 1) * 40;
+
+        this.dt = 1.0 / framesPerSecond;
+
+        // Give the particle a random color
+        this.color = 'hsl(' + Math.floor(Math.random() * 360) + ',100%, 50%)';
+    }
+
+    /**
+     * Draw the firework particle to the canvas.
+     */
+    public draw() {
+        this.ctx.beginPath();
+        this.ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
+        this.ctx.closePath();
+        this.ctx.fillStyle = this.color;
+        this.ctx.fill();
+    }
+}
+
+/**
  * A simulated enumeration for the different particle types.
  */
 export class ParticleType {
-    static BouncingBall: string = "BouncingBall";
+    static BouncingBall: string = "Bouncing Ball";
+    static Firework: string = "Firework";
+
+    static get particleTypes(): string[]{
+        return [BouncingBall, Firework];
+    }
 }
 
 /**
@@ -134,9 +176,12 @@ export class ParticleFactory {
     /**
      * Create a particle based on the specified particle type.
      */
-    public create(particleType: string) {
+    public create(particleType: string) : Particle {
         if (particleType == ParticleType.BouncingBall) {
             return new BouncingBallParticle(this.ctx);
+        }
+        else if (particleType == ParticleType.Firework) {
+            return new FireworkParticle(this.ctx);
         }
 
         throw 'Invalid particle type specified';
@@ -157,7 +202,7 @@ export class Particles extends Drawing.AnimatedDrawable {
     // The factory for creating the particles
     particleFactory: ParticleFactory;
 
-    constructor(public ctx: CanvasRenderingContext2D, private particleType: string = ParticleType.BouncingBall) {
+    constructor(public ctx: CanvasRenderingContext2D, public particleType: string = ParticleType.BouncingBall) {
         super(ctx);
 
         // Create the particle factory first before we will use it to create the particles

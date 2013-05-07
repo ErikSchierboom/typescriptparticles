@@ -23,9 +23,16 @@
     <!-- The canvas that we will be drawing our particles on -->
     <canvas id="particlesCanvas"></canvas>
 
-    <div>
-        <button data-bind="click: toggleAnimating, text: animating() ? 'Pause' : 'Resume'"></button>
-        <button data-bind="click: refresh">Refresh</button>
-    </div>
+    <ul>        
+        <li>
+            <select data-bind="options: particleTypes, value: selectedParticleType"></select>
+        </li>  
+        <li>
+            <button data-bind="click: reset">Reset</button>
+        </li>     
+        <li>
+            <button data-bind="click: toggleAnimating, text: animating() ? 'Pause' : 'Resume'"></button>
+        </li>     
+    </ul>
 </body>
 </html>

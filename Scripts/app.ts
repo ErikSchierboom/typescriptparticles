@@ -14,8 +14,14 @@ class AppViewModel {
     // The particles that will be rendered to the screen
     private particles: Particles.Particles;
 
+    // This observable contains all the particle types
+    public particleTypes = ko.observableArray(Particles.ParticleType.particleTypes);
+
+    // This observable contains the selected particle type
+    public selectedParticleType = ko.observable(Particles.ParticleType.BouncingBall);
+
     // This observable will indicate if we are currently animating
-    public animating = ko.observable(false);    
+    public animating = ko.observable(false);
 
     constructor() {
         // Get the 2D rendering context from our canvas element
@@ -25,6 +31,13 @@ class AppViewModel {
         // Create the particles instance and start animating
         this.particles = new Particles.Particles(ctx);
         this.startAnimating();
+
+        // Update the particle type when the user has changed it and then reset
+        // the rendered particles
+        this.selectedParticleType.subscribe(function (newParticleType) => {
+            this.particles.particleType = newParticleType;
+            this.reset();
+        });
     }
 
     /**
@@ -56,9 +69,9 @@ class AppViewModel {
     }
 
     /**
-     * Refresh the particles that are rendered on the screen.
+     * Reset the particles that are rendered on the screen.
      */
-    public refresh() {
+    public reset() {        
         this.particles.refresh();
     }
 }

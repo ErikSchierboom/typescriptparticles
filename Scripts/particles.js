@@ -136,9 +136,43 @@ define(["require", "exports", 'drawing'], function(require, exports, __Drawing__
         return BouncingBallParticle;
     })(Particle);
     exports.BouncingBallParticle = BouncingBallParticle;    
+    var FireworkParticle = (function (_super) {
+        __extends(FireworkParticle, _super);
+        function FireworkParticle(ctx) {
+                _super.call(this, ctx);
+            this.ctx = ctx;
+            this.radius = Math.random() * 20 + 5;
+            this.x = this.ctx.canvas.width / 2;
+            this.y = this.ctx.canvas.height / 2;
+            this.vx = (Math.random() * 2 - 1) * 40;
+            this.vy = (Math.random() * 2 - 1) * 40;
+            this.dt = 1.0 / framesPerSecond;
+            this.color = 'hsl(' + Math.floor(Math.random() * 360) + ',100%, 50%)';
+        }
+        FireworkParticle.prototype.draw = function () {
+            this.ctx.beginPath();
+            this.ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
+            this.ctx.closePath();
+            this.ctx.fillStyle = this.color;
+            this.ctx.fill();
+        };
+        return FireworkParticle;
+    })(Particle);
+    exports.FireworkParticle = FireworkParticle;    
     var ParticleType = (function () {
         function ParticleType() { }
-        ParticleType.BouncingBall = "BouncingBall";
+        ParticleType.BouncingBall = "Bouncing Ball";
+        ParticleType.Firework = "Firework";
+        Object.defineProperty(ParticleType, "particleTypes", {
+            get: function () {
+                return [
+                    ParticleType.BouncingBall, 
+                    ParticleType.Firework
+                ];
+            },
+            enumerable: true,
+            configurable: true
+        });
         return ParticleType;
     })();
     exports.ParticleType = ParticleType;    
@@ -149,6 +183,8 @@ define(["require", "exports", 'drawing'], function(require, exports, __Drawing__
         ParticleFactory.prototype.create = function (particleType) {
             if(particleType == ParticleType.BouncingBall) {
                 return new BouncingBallParticle(this.ctx);
+            } else if(particleType == ParticleType.Firework) {
+                return new FireworkParticle(this.ctx);
             }
             throw 'Invalid particle type specified';
         };
