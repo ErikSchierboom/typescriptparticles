@@ -9,14 +9,14 @@ define(["require", "exports", 'drawing', 'particle'], function(require, exports,
     var Particle = __Particle__;
 
     var ParticleFactory = (function () {
-        function ParticleFactory(ctx) {
-            this.ctx = ctx;
+        function ParticleFactory(stage) {
+            this.stage = stage;
         }
         ParticleFactory.prototype.create = function (particleType) {
             if(particleType == Particle.ParticleType.BouncingBall) {
-                return new Particle.BouncingBallParticle(this.ctx);
+                return new Particle.BouncingBallParticle(this.stage);
             } else if(particleType == Particle.ParticleType.Firework) {
-                return new Particle.FireworkParticle(this.ctx);
+                return new Particle.FireworkParticle(this.stage);
             }
             throw 'Invalid particle type specified';
         };
@@ -25,13 +25,13 @@ define(["require", "exports", 'drawing', 'particle'], function(require, exports,
     exports.ParticleFactory = ParticleFactory;    
     var Particles = (function (_super) {
         __extends(Particles, _super);
-        function Particles(ctx, particleType) {
+        function Particles(stage, particleType) {
             if (typeof particleType === "undefined") { particleType = Particle.ParticleType.BouncingBall; }
-                _super.call(this, ctx);
-            this.ctx = ctx;
+                _super.call(this, stage);
+            this.stage = stage;
             this.particleType = particleType;
             this.numberOfParticlesToRender = 10;
-            this.particleFactory = new ParticleFactory(ctx);
+            this.particleFactory = new ParticleFactory(stage);
             this.createParticles();
         }
         Particles.prototype.createParticles = function () {
@@ -45,11 +45,13 @@ define(["require", "exports", 'drawing', 'particle'], function(require, exports,
             this.createParticles();
         };
         Particles.prototype.draw = function () {
-            this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+            var layer = new Kinetic.Layer();
             for(var i = 0; i < this.particles.length; i++) {
                 this.particles[i].update();
-                this.particles[i].draw();
+                this.particles[i].draw(layer);
             }
+            this.stage.clear();
+            this.stage.add(layer);
         };
         return Particles;
     })(Drawing.AnimatedDrawable);

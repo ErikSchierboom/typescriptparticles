@@ -26,9 +26,9 @@ define(["require", "exports", 'drawing'], function(require, exports, __Drawing__
     exports.ParticleType = ParticleType;    
     var Particle = (function (_super) {
         __extends(Particle, _super);
-        function Particle(ctx) {
-                _super.call(this, ctx);
-            this.ctx = ctx;
+        function Particle(stage) {
+                _super.call(this, stage);
+            this.stage = stage;
             this.coordinate = new Drawing.Point();
         }
         Particle.prototype.update = function () {
@@ -54,12 +54,12 @@ define(["require", "exports", 'drawing'], function(require, exports, __Drawing__
     exports.Particle = Particle;    
     var BouncingBallParticle = (function (_super) {
         __extends(BouncingBallParticle, _super);
-        function BouncingBallParticle(ctx) {
-                _super.call(this, ctx);
-            this.ctx = ctx;
+        function BouncingBallParticle(stage) {
+                _super.call(this, stage);
+            this.stage = stage;
             this.radius = Math.random() * 20 + 5;
-            this.coordinate.x = Math.random() * (this.ctx.canvas.width - this.radius * 2) + this.radius;
-            this.coordinate.y = Math.random() * (this.ctx.canvas.height - this.radius * 2) + this.radius;
+            this.coordinate.x = Math.random() * (this.stage.getWidth() - this.radius * 2) + this.radius;
+            this.coordinate.y = Math.random() * (this.stage.getHeight() - this.radius * 2) + this.radius;
             this.vx = (Math.random() * 2 - 1) * 40;
             this.vy = (Math.random() * 2 - 1) * 40;
             this.dt = 1.0 / framesPerSecond;
@@ -74,12 +74,14 @@ define(["require", "exports", 'drawing'], function(require, exports, __Drawing__
                 this.vy *= -1;
             }
         };
-        BouncingBallParticle.prototype.draw = function () {
-            this.ctx.beginPath();
-            this.ctx.arc(this.coordinate.x, this.coordinate.y, this.radius, 0, 2 * Math.PI, false);
-            this.ctx.closePath();
-            this.ctx.fillStyle = this.color;
-            this.ctx.fill();
+        BouncingBallParticle.prototype.draw = function (layer) {
+            var circle = new Kinetic.Circle({
+                x: this.coordinate.x,
+                y: this.coordinate.y,
+                radius: this.radius,
+                fill: 'red'
+            });
+            layer.add(circle);
         };
         Object.defineProperty(BouncingBallParticle.prototype, "movingToLeft", {
             get: function () {
@@ -118,7 +120,7 @@ define(["require", "exports", 'drawing'], function(require, exports, __Drawing__
         });
         Object.defineProperty(BouncingBallParticle.prototype, "overRightBorder", {
             get: function () {
-                return this.coordinate.x >= this.ctx.canvas.width - this.radius;
+                return this.coordinate.x >= this.stage.getWidth() - this.radius;
             },
             enumerable: true,
             configurable: true
@@ -132,7 +134,7 @@ define(["require", "exports", 'drawing'], function(require, exports, __Drawing__
         });
         Object.defineProperty(BouncingBallParticle.prototype, "overBottomBorder", {
             get: function () {
-                return this.coordinate.y >= this.ctx.canvas.height - this.radius;
+                return this.coordinate.y >= this.stage.getHeight() - this.radius;
             },
             enumerable: true,
             configurable: true
@@ -156,24 +158,17 @@ define(["require", "exports", 'drawing'], function(require, exports, __Drawing__
     exports.BouncingBallParticle = BouncingBallParticle;    
     var FireworkParticle = (function (_super) {
         __extends(FireworkParticle, _super);
-        function FireworkParticle(ctx) {
-                _super.call(this, ctx);
-            this.ctx = ctx;
-            this.coordinate.x = this.ctx.canvas.width / 2;
-            this.coordinate.y = this.ctx.canvas.height / 2;
+        function FireworkParticle(stage) {
+                _super.call(this, stage);
+            this.stage = stage;
+            this.coordinate.x = this.stage.getWidth() / 2;
+            this.coordinate.y = this.stage.getHeight() / 2;
             this.vx = (Math.random() * 2 - 1) * 40;
             this.vy = (Math.random() * 2 - 1) * 40;
             this.dt = 1.0 / framesPerSecond;
             this.color = 'hsl(' + Math.floor(Math.random() * 360) + ',100%, 50%)';
         }
-        FireworkParticle.prototype.draw = function () {
-            this.ctx.beginPath();
-            this.ctx.moveTo(this.lastCoordinate.x, this.lastCoordinate.y);
-            this.ctx.lineTo(this.coordinate.x, this.coordinate.y);
-            this.ctx.closePath();
-            this.ctx.lineWidth = 3.0;
-            this.ctx.strokeStyle = this.color;
-            this.ctx.stroke();
+        FireworkParticle.prototype.draw = function (layer) {
         };
         FireworkParticle.prototype.update = function () {
             this.updateLastCoordinate();

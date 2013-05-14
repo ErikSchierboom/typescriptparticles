@@ -1,4 +1,5 @@
-﻿/// <reference path="drawing.ts" />
+﻿/// <reference path="libs/typings/kinetic.d.ts" />
+/// <reference path="drawing.ts" />
 
 var framesPerSecond = 60;
 
@@ -28,8 +29,8 @@ export class Particle extends Drawing.Drawable {
     dt: number;
     color: string;
 
-    constructor(public ctx: CanvasRenderingContext2D) {
-        super(ctx);
+    constructor(public stage: Kinetic.Stage) {
+        super(stage);
     }
 
     /**
@@ -51,15 +52,15 @@ export class Particle extends Drawing.Drawable {
 export class BouncingBallParticle extends Particle {
     radius: number;
 
-    constructor(public ctx: CanvasRenderingContext2D) {
-        super(ctx);
+    constructor(public stage: Kinetic.Stage) {
+        super(stage);
 
         // Generate a random radius to create different sized circles
         this.radius = Math.random() * 20 + 5;
 
         // Give the particle a random coordinate that fits on the canvas
-        this.coordinate.x = Math.random() * (this.ctx.canvas.width - this.radius * 2) + this.radius;
-        this.coordinate.y = Math.random() * (this.ctx.canvas.height - this.radius * 2) + this.radius;
+        this.coordinate.x = Math.random() * (this.stage.getWidth() - this.radius * 2) + this.radius;
+        this.coordinate.y = Math.random() * (this.stage.getHeight() - this.radius * 2) + this.radius;
 
         // Create random x and y vectors that will determine where the
         // particle will be moving to
@@ -91,12 +92,21 @@ export class BouncingBallParticle extends Particle {
     /**
      * Draw the bouncing ball to the canvas.
      */
-    public draw() {
-        this.ctx.beginPath();
-        this.ctx.arc(this.coordinate.x, this.coordinate.y, this.radius, 0, 2 * Math.PI, false);
-        this.ctx.closePath();
-        this.ctx.fillStyle = this.color;
-        this.ctx.fill();
+    public draw(layer: Kinetic.Layer) {
+        var circle = new Kinetic.Circle({
+            x: this.coordinate.x,
+            y: this.coordinate.y,
+            radius: this.radius,
+            fill: 'red'
+        });
+
+        layer.add(circle);
+
+        //this.ctx.beginPath();
+        //this.ctx.arc(this.coordinate.x, this.coordinate.y, this.radius, 0, 2 * Math.PI, false);
+        //this.ctx.closePath();
+        //this.ctx.fillStyle = this.color;
+        //this.ctx.fill();
     }
 
     // Properties used to retrieve the movevement direction of the particle
@@ -107,9 +117,9 @@ export class BouncingBallParticle extends Particle {
 
     // Properties used to determine if the bouncing ball is over a border
     get overLeftBorder(): bool { return this.coordinate.x <= this.radius; }
-    get overRightBorder(): bool { return this.coordinate.x >= this.ctx.canvas.width - this.radius; }
+    get overRightBorder(): bool { return this.coordinate.x >= this.stage.getWidth() - this.radius; }
     get overTopBorder(): bool { return this.coordinate.y <= this.radius; }
-    get overBottomBorder(): bool { return this.coordinate.y >= this.ctx.canvas.height - this.radius; }
+    get overBottomBorder(): bool { return this.coordinate.y >= this.stage.getHeight() - this.radius; }
 
     /**
      * Indicates if the particle should reverse its horizontal direction due
@@ -138,12 +148,12 @@ export class FireworkParticle extends Particle {
     // The last coordinate
     lastCoordinate: Drawing.Point;
     
-    constructor(public ctx: CanvasRenderingContext2D) {
-        super(ctx);
+    constructor(public stage: Kinetic.Stage) {
+        super(stage);
 
         // Give the particle a random coordinate that fits on the canvas
-        this.coordinate.x = this.ctx.canvas.width / 2;
-        this.coordinate.y = this.ctx.canvas.height / 2;
+        this.coordinate.x = this.stage.getWidth() / 2;
+        this.coordinate.y = this.stage.getHeight() / 2;
 
         // Create random x and y vectors that will determine where the
         // particle will be moving to
@@ -159,14 +169,14 @@ export class FireworkParticle extends Particle {
     /**
      * Draw the firework particle to the canvas.
      */
-    public draw() {        
-        this.ctx.beginPath();
-        this.ctx.moveTo(this.lastCoordinate.x, this.lastCoordinate.y);
-        this.ctx.lineTo(this.coordinate.x, this.coordinate.y);
-        this.ctx.closePath();
-        this.ctx.lineWidth = 3.0;
-        this.ctx.strokeStyle = this.color;
-        this.ctx.stroke();
+    public draw(layer: Kinetic.Layer) {
+        //this.ctx.beginPath();
+        //this.ctx.moveTo(this.lastCoordinate.x, this.lastCoordinate.y);
+        //this.ctx.lineTo(this.coordinate.x, this.coordinate.y);
+        //this.ctx.closePath();
+        //this.ctx.lineWidth = 3.0;
+        //this.ctx.strokeStyle = this.color;
+        //this.ctx.stroke();
     }
 
     public update() {

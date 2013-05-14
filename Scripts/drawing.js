@@ -5,29 +5,24 @@ var __extends = this.__extends || function (d, b) {
 };
 define(["require", "exports"], function(require, exports) {
     var Drawable = (function () {
-        function Drawable(ctx) {
-            this.ctx = ctx;
+        function Drawable(stage) {
+            this.stage = stage;
         }
-        Drawable.prototype.draw = function () {
+        Drawable.prototype.draw = function (layer) {
         };
         return Drawable;
     })();
     exports.Drawable = Drawable;    
     var AnimatedDrawable = (function (_super) {
         __extends(AnimatedDrawable, _super);
-        function AnimatedDrawable(ctx) {
-                _super.call(this, ctx);
-            this.ctx = ctx;
+        function AnimatedDrawable(stage) {
+                _super.call(this, stage);
+            this.stage = stage;
         }
-        AnimatedDrawable.prototype.startAnimating = function () {
-            var _this = this;
-            this.animationHandle = window.requestAnimationFrame(function () {
-                _this.startAnimating();
-            });
-            this.draw();
+        AnimatedDrawable.prototype.startAnimating = function (layer) {
+            this.draw(layer);
         };
         AnimatedDrawable.prototype.stopAnimating = function () {
-            window.cancelAnimationFrame(this.animationHandle);
         };
         return AnimatedDrawable;
     })(Drawable);

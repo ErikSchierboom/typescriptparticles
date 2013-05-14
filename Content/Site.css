@@ -11,9 +11,7 @@ header, footer, nav, section {
 }
 
 canvas {
-    border: 1px dashed #000000;    
-    width: 700px;
-    height: 300px;
+    border: 1px dashed #000000;
 }
 
 ul, li {

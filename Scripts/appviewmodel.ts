@@ -1,16 +1,29 @@
-﻿/// <reference path="libs/typings/jquery.d.ts" />
-/// <reference path="libs/typings/knockout.d.ts" />
+﻿/// <reference path="Libs/Typings/jquery.d.ts" />
+/// <reference path="Libs/Typings/knockout.d.ts" />
+/// <reference path="Libs/Typings/kinetic.d.ts" />
+/// <reference path="Libs/Typings/require.d.ts" />
+
 /// <reference path="drawing.ts" />
 /// <reference path="particles.ts" />
+/// <amd-dependency path="knockout" />
+/// <amd-dependency path="kinetic" />
 
 import Drawing = module('drawing');
 import Particles = module('particles');
 import Particle = module('particle');
 
+var ko = require('knockout');
+
 /**
  * This class will serve as the view model for our app.
  */
-class AppViewModel {
+export class AppViewModel {
+
+    // The Kinetic stage
+    private stage: Kinetic.Stage;
+
+    // The Kinetic layer
+    private layer: Kinetic.Layer;
 
     // The particles that will be rendered to the screen
     private particles: Particles.Particles;
@@ -25,12 +38,17 @@ class AppViewModel {
     public animating = ko.observable(false);
 
     constructor() {
-        // Get the 2D rendering context from our canvas element
-        var canvas = <HTMLCanvasElement>$('#particlesCanvas')[0];
-        var ctx = canvas.getContext('2d');
+
+        // Create the Kinetic stage that forms the basis to which the 
+        // Kinetic layer will be added that will be rendered to
+        this.stage = new Kinetic.Stage({
+            container: 'particlesCanvas',
+            width: 700,
+            height: 300
+        });
 
         // Create the particles
-        this.particles = new Particles.Particles(ctx);
+        this.particles = new Particles.Particles(this.stage);
 
         // Update the particle type when the user has changed it and then reset
         // the rendered particles
@@ -59,7 +77,7 @@ class AppViewModel {
      */
     private startAnimating() {
         this.animating(true);
-        this.particles.startAnimating();
+        this.particles.startAnimating(null);
     }
 
     /**
@@ -77,11 +95,3 @@ class AppViewModel {
         this.particles.refresh();
     }
 }
-
-$(document).ready(function () {
-
-    // Create the view model and apply its bindings to knockout
-    var viewModel = new AppViewModel();
-    ko.applyBindings(viewModel);
-
-});

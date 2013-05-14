@@ -1,15 +1,17 @@
-﻿/**
+﻿/// <reference path="libs/typings/kinetic.d.ts" />
+
+/**
 * Interface for objects that can draw themselves to the screen.
 */
 export interface IDrawable {
-    draw();
+    draw(layer: Kinetic.Layer);
 }
 
 /**
 * Interface for objects that can be animated.
 */
 export interface IAnimatable extends IDrawable {
-    startAnimating();
+    startAnimating(layer: Kinetic.Layer);
     stopAnimating();
 }
 
@@ -17,10 +19,10 @@ export interface IAnimatable extends IDrawable {
 * Base class for classes that want to draw to a canvas.
 */
 export class Drawable implements IDrawable {
-    constructor(public ctx: CanvasRenderingContext2D) { }
+    constructor(public stage: Kinetic.Stage) { }
 
     // We don't draw anything here, this should be implemented by child classes
-    public draw() { }
+    public draw(layer: Kinetic.Layer) { }
 }
 
 /**
@@ -35,25 +37,17 @@ export class AnimatedDrawable extends Drawable implements IAnimatable {
     // Indicates if animating is already happening
     private animating: bool;
 
-    constructor(public ctx: CanvasRenderingContext2D) {
-        super(ctx);
+    constructor(public stage: Kinetic.Stage) {
+        super(stage);
     }
 
-    public startAnimating() {
-
-        // Request an animation frame for the current method. 
-        // This will cause this method to be called to render
-        // in around 60 FPS
-        this.animationHandle = window.requestAnimationFrame(function () => {
-            this.startAnimating()
-        });
-
+    public startAnimating(layer: Kinetic.Layer) {
         // Draw to the screen
-        this.draw();
+        this.draw(layer);
     }
 
     public stopAnimating() {
-        window.cancelAnimationFrame(this.animationHandle);
+       // TODO: 
     }
 }
 
