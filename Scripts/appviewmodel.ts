@@ -1,16 +1,13 @@
-﻿/// <reference path="Libs/Typings/jquery.d.ts" />
-/// <reference path="Libs/Typings/knockout.d.ts" />
-/// <reference path="Libs/Typings/kinetic.d.ts" />
-/// <reference path="Libs/Typings/require.d.ts" />
+﻿/// <reference path="libs/typings/jquery.d.ts" />
+/// <reference path="libs/typings/knockout.d.ts" />
+/// <reference path="libs/typings/raphael.d.ts" />
+/// <reference path="libs/typings/require.d.ts" />
 
-/// <reference path="drawing.ts" />
-/// <reference path="particles.ts" />
 /// <amd-dependency path="knockout" />
-/// <amd-dependency path="kinetic" />
+/// <amd-dependency path="raphael" />
 
-import Drawing = module('drawing');
-import Particles = module('particles');
-import Particle = module('particle');
+import Drawing = module('helpers/drawing');
+import Particles = module('Particles/particles');
 
 var ko = require('knockout');
 
@@ -19,36 +16,28 @@ var ko = require('knockout');
  */
 export class AppViewModel {
 
-    // The Kinetic stage
-    private stage: Kinetic.Stage;
-
-    // The Kinetic layer
-    private layer: Kinetic.Layer;
+    // The Raphael paper
+    private paper: RaphaelPaper;
 
     // The particles that will be rendered to the screen
     private particles: Particles.Particles;
 
     // This observable contains all the particle types
-    public particleTypes = ko.observableArray(Particle.ParticleType.particleTypes);
+    public particleTypes = ko.observableArray(Particles.ParticleType.particleTypes);
 
     // This observable contains the selected particle type
-    public selectedParticleType = ko.observable(Particle.ParticleType.BouncingBall);
+    public selectedParticleType = ko.observable(Particles.ParticleType.BouncingBall);
 
     // This observable will indicate if we are currently animating
     public animating = ko.observable(false);
 
     constructor() {
 
-        // Create the Kinetic stage that forms the basis to which the 
-        // Kinetic layer will be added that will be rendered to
-        this.stage = new Kinetic.Stage({
-            container: 'particlesCanvas',
-            width: 700,
-            height: 300
-        });
+        // Create the Raphael paper on which all drawing will be done
+        this.paper = Raphael('particlesCanvas', 700, 300);
 
         // Create the particles
-        this.particles = new Particles.Particles(this.stage);
+        this.particles = new Particles.Particles(this.paper);
 
         // Update the particle type when the user has changed it and then reset
         // the rendered particles
@@ -77,14 +66,14 @@ export class AppViewModel {
      */
     private startAnimating() {
         this.animating(true);
-        this.particles.startAnimating(null);
+        //this.particles.startAnimating(null);
     }
 
     /**
      * Stop animating the particles.
      */
     private stopAnimating() {
-        this.particles.stopAnimating();
+        //this.particles.stopAnimating();
         this.animating(false);
     }
 

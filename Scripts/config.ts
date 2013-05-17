@@ -1,12 +1,12 @@
-﻿/// <reference path="Libs/Typings/require.d.ts" />
-/// <reference path="Libs/Typings/knockout.d.ts" />
+﻿/// <reference path="libs/typings/require.d.ts" />
+/// <reference path="libs/typings/knockout.d.ts" />
 
 // Setup the dependencies for RequireJS
-require.config({    
+require.config({
     paths: {
         'jquery':   'Libs/jquery-1.9.1.min',
         'knockout': 'Libs/knockout-2.2.1.min',
-        'kinetic':  'Libs/kinetic-v4.5.1.min',
+        'raphael':  'Libs/raphael-min',
     },
     shim: {
         'jquery':   { exports: '$'  },
