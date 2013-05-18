@@ -1,6 +1,7 @@
 /// <reference path="../../../scripts/libs/typings/jasmine.d.ts" />
+/// <reference path="../../../scripts/helpers/vector.ts" />
 
-import Vector = module('helpers/vector');
+import Vector = module('./scripts/helpers/vector');
 
 export module VectorSpec { 
     describe("Vector2d", function () {

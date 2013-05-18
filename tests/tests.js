@@ -1,6 +1,8 @@
 require.config({
     baseUrl: '../',
     paths: {
+        'specs': 'specifications',
+        'src': 'scripts',
         'jquery': 'scripts/libs/jquery-1.9.1.min',
         'knockout': 'scripts/libs/knockout-2.2.1.min',
         'raphael': 'scripts/libs/raphael-min',
@@ -30,7 +32,7 @@ require([
     'knockout', 
     'jasmine', 
     'jasmine-html', 
-    'specifications/helpers/vectorspec'
+    'specs/helpers/vectorspec'
 ], function (jQuery, ko, jasmine, jasmineHtml) {
     var jasmineEnv = jasmine.getEnv();
     jasmineEnv.updateInterval = 1000;

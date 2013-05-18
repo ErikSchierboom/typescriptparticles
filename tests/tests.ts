@@ -6,6 +6,8 @@
 require.config({
     baseUrl: '../',
     paths: {
+        'specs': 'specifications',
+        'src': 'scripts',
         'jquery': 'scripts/libs/jquery-1.9.1.min',
         'knockout': 'scripts/libs/knockout-2.2.1.min',
         'raphael': 'scripts/libs/raphael-min',
@@ -24,7 +26,7 @@ require.config({
 });
 
 // Start the app by first requiring the following libraries to be loaded
-require(['jquery', 'knockout', 'jasmine', 'jasmine-html', 'specifications/helpers/vectorspec' ], (jQuery, ko, jasmine, jasmineHtml) => {
+require(['jquery', 'knockout', 'jasmine', 'jasmine-html', 'specs/helpers/vectorspec' ], (jQuery, ko, jasmine, jasmineHtml) => {
 
     var jasmineEnv = jasmine.getEnv();
     jasmineEnv.updateInterval = 1000;
