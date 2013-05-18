@@ -1,4 +1,4 @@
-define(["require", "exports", 'Particles/particles', "knockout", "raphael"], function(require, exports, __Particles__) {
+define(["require", "exports", 'particles/particlesystem', "knockout", "raphael"], function(require, exports, __Particles__) {
     
     var Particles = __Particles__;
 
@@ -6,31 +6,28 @@ define(["require", "exports", 'Particles/particles', "knockout", "raphael"], fun
     var AppViewModel = (function () {
         function AppViewModel() {
             var _this = this;
+            this.paperElement = 'particlesCanvas';
+            this.paperWidth = 700;
+            this.paperHeight = 300;
             this.particleTypes = ko.observableArray(Particles.ParticleType.particleTypes);
             this.selectedParticleType = ko.observable(Particles.ParticleType.BouncingBall);
             this.animating = ko.observable(false);
-            this.paper = Raphael('particlesCanvas', 700, 300);
+            this.paper = Raphael(this.paperElement, this.paperWidth, this.paperHeight);
             this.particleSystem = new Particles.ParticleSystem(this.paper);
             this.selectedParticleType.subscribe(function (newParticleType) {
                 _this.particleSystem.particleType = newParticleType;
                 _this.reset();
             });
-            this.startAnimating();
+            this.toggleAnimating();
         }
         AppViewModel.prototype.toggleAnimating = function () {
             if(this.animating()) {
-                this.stopAnimating();
+                this.particleSystem.stopAnimating();
+                this.animating(false);
             } else {
-                this.startAnimating();
+                this.particleSystem.startAnimating();
+                this.animating(true);
             }
-        };
-        AppViewModel.prototype.startAnimating = function () {
-            this.animating(true);
-            this.particleSystem.startAnimating();
-        };
-        AppViewModel.prototype.stopAnimating = function () {
-            this.particleSystem.stopAnimating();
-            this.animating(false);
         };
         AppViewModel.prototype.reset = function () {
             this.particleSystem.refresh();

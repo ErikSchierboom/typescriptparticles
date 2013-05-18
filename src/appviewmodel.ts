@@ -1,13 +1,12 @@
-﻿/// <reference path="libs/typings/jquery.d.ts" />
-/// <reference path="libs/typings/knockout.d.ts" />
-/// <reference path="libs/typings/raphael.d.ts" />
-/// <reference path="libs/typings/require.d.ts" />
+﻿/// <reference path="../libs/require.d.ts" /> 
+/// <reference path="../libs/knockout.d.ts" />
+/// <reference path="../libs/raphael.d.ts" />
 
 /// <amd-dependency path="knockout" />
 /// <amd-dependency path="raphael" />
 
 import Drawing = module('helpers/drawing');
-import Particles = module('Particles/particles');
+import Particles = module('particles/particlesystem');
 
 var ko = require('knockout');
 
@@ -16,16 +15,21 @@ var ko = require('knockout');
  */
 export class AppViewModel {
 
-    // The Raphael paper
+    // The Raphael paper settings
+    private paperElement: string = 'particlesCanvas';
+    private paperWidth: number = 700;
+    private paperHeight: number = 300;
     private paper: RaphaelPaper;
 
-    // The particles that will be rendered to the screen
+    // The particle system that will render the particles to the screen
     private particleSystem: Particles.ParticleSystem;
 
-    // This observable contains all the particle types
+    // This observable contains all the particle types. We use this to let the use 
+    // select the particle type to render
     public particleTypes = ko.observableArray(Particles.ParticleType.particleTypes);
 
-    // This observable contains the selected particle type
+    // This observable contains the selected particle type, which is the particle
+    // type that is rendered
     public selectedParticleType = ko.observable(Particles.ParticleType.BouncingBall);
 
     // This observable will indicate if we are currently animating
@@ -34,9 +38,9 @@ export class AppViewModel {
     constructor() {
 
         // Create the Raphael paper on which all drawing will be done
-        this.paper = Raphael('particlesCanvas', 700, 300);        
+        this.paper = Raphael(this.paperElement, this.paperWidth, this.paperHeight);
 
-        // Create the particle system
+        // Create the particle system that will draw the particles to the paper
         this.particleSystem = new Particles.ParticleSystem(this.paper);
 
         // Update the particle type when the user has changed it and then reset
@@ -45,38 +49,23 @@ export class AppViewModel {
             this.particleSystem.particleType = newParticleType;
             this.reset();
         });
-                
-        this.startAnimating();
+
+        // Immediately start animating
+        this.toggleAnimating();
     }
 
     /**
-     * Toggle the animating from running to stopped or vice versa.
+     * Toggle the animation from running to stopped and vice versa.
      */
     public toggleAnimating() {
         if (this.animating()) {
-            this.stopAnimating();
+            this.particleSystem.stopAnimating();
+            this.animating(false);
         }
         else {
-            this.startAnimating();
+            this.particleSystem.startAnimating();
+            this.animating(true);
         }
-    }
-
-    /**
-     * Start animating the particles. We also update our observable property
-     * to ensure that the GUI is updated too.
-     */
-    private startAnimating() {
-        this.animating(true);
-        this.particleSystem.startAnimating();
-    }
-
-    /**
-     * Stop animating the particles. We also update our observable property
-     * to ensure that the GUI is updated too.
-     */
-    private stopAnimating() {
-        this.particleSystem.stopAnimating();
-        this.animating(false);
     }
 
     /**

@@ -1,4 +1,4 @@
-﻿/// <reference path="../libs/typings/raphael.d.ts" />
+﻿/// <reference path="../../libs/raphael.d.ts" />
 
 import Vector = module('helpers/vector');
 import Drawing = module('helpers/drawing');
@@ -19,7 +19,7 @@ export class Particle extends Drawing.Drawable {
     constructor(public paper: RaphaelPaper) {
         super(paper);
 
-        this.dt = 1.0 / Drawing.framesPerSecond;
+        this.dt = 1.0 / Drawing.FramesPerSecond;
     }
 
     /**

@@ -16,7 +16,7 @@ define(["require", "exports", 'helpers/vector', 'helpers/drawing'], function(req
             this.coordinate = new Vector.Vector2d();
             this.movement = new Vector.Vector2d();
             this.iteration = 1;
-            this.dt = 1.0 / Drawing.framesPerSecond;
+            this.dt = 1.0 / Drawing.FramesPerSecond;
         }
         Particle.prototype.update = function () {
             this.coordinate = this.coordinate.add(this.movement.multiply(this.dt));

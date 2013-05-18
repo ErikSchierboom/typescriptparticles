@@ -1,8 +1,8 @@
-﻿/// <reference path="../libs/typings/raphael.d.ts" />
+﻿/// <reference path="../../libs/raphael.d.ts" />
 
 import Vector = module('helpers/vector');
 import Drawing = module('helpers/drawing');
-import Particle = module('Particles/particle');
+import Particle = module('particles/particle');
 
 /**
  * This class extends the Particle class to creating a bouncing ball particle.

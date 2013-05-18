@@ -3,7 +3,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-define(["require", "exports", 'helpers/drawing', 'Particles/bouncingballparticle', 'Particles/fireworkparticle', "animation"], function(require, exports, __Drawing__, __BouncingBallParticle__, __FireworkParticle__) {
+define(["require", "exports", 'helpers/drawing', 'particles/bouncingballparticle', 'particles/fireworkparticle', "animation"], function(require, exports, __Drawing__, __BouncingBallParticle__, __FireworkParticle__) {
     var Drawing = __Drawing__;
 
     
@@ -28,21 +28,6 @@ define(["require", "exports", 'helpers/drawing', 'Particles/bouncingballparticle
         return ParticleType;
     })();
     exports.ParticleType = ParticleType;    
-    var ParticleFactory = (function () {
-        function ParticleFactory(paper) {
-            this.paper = paper;
-        }
-        ParticleFactory.prototype.create = function (particleType) {
-            if(particleType == ParticleType.BouncingBall) {
-                return new BouncingBallParticle.BouncingBallParticle(this.paper);
-            } else if(particleType == ParticleType.Firework) {
-                return new FireworkParticle.FireworkParticle(this.paper);
-            }
-            throw 'Invalid particle type specified';
-        };
-        return ParticleFactory;
-    })();
-    exports.ParticleFactory = ParticleFactory;    
     var ParticleSystem = (function (_super) {
         __extends(ParticleSystem, _super);
         function ParticleSystem(paper, particleType) {
@@ -50,16 +35,23 @@ define(["require", "exports", 'helpers/drawing', 'Particles/bouncingballparticle
                 _super.call(this, paper);
             this.paper = paper;
             this.particleType = particleType;
-            this.numberOfParticlesToRender = 1;
-            this.particleFactory = new ParticleFactory(paper);
+            this.numberOfParticlesToRender = 20;
             this.createParticles();
         }
         ParticleSystem.prototype.createParticles = function () {
             this.Drawables = [];
             for(var i = 0; i < this.numberOfParticlesToRender; ++i) {
-                this.Drawables.push(this.particleFactory.create(this.particleType));
+                this.Drawables.push(this.createParticle());
             }
             ;
+        };
+        ParticleSystem.prototype.createParticle = function () {
+            if(this.particleType == ParticleType.BouncingBall) {
+                return new BouncingBallParticle.BouncingBallParticle(this.paper);
+            } else if(this.particleType == ParticleType.Firework) {
+                return new FireworkParticle.FireworkParticle(this.paper);
+            }
+            throw 'Invalid particle type specified.';
         };
         ParticleSystem.prototype.refresh = function () {
             this.createParticles();

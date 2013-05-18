@@ -3,7 +3,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-define(["require", "exports", 'helpers/vector', 'helpers/drawing', 'Particles/particle'], function(require, exports, __Vector__, __Drawing__, __Particle__) {
+define(["require", "exports", 'helpers/vector', 'helpers/drawing', 'particles/particle'], function(require, exports, __Vector__, __Drawing__, __Particle__) {
     var Vector = __Vector__;
 
     var Drawing = __Drawing__;
