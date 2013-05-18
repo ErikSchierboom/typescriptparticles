@@ -14,25 +14,14 @@ define(["require", "exports", 'helpers/vector', 'helpers/drawing'], function(req
                 _super.call(this, paper);
             this.paper = paper;
             this.coordinate = new Vector.Vector2d();
+            this.movement = new Vector.Vector2d();
+            this.iteration = 1;
+            this.dt = 1.0 / Drawing.framesPerSecond;
         }
         Particle.prototype.update = function () {
-            this.coordinate.x += this.horizontalMovement;
-            this.coordinate.y += this.verticalMovement;
+            this.coordinate = this.coordinate.add(this.movement.multiply(this.dt));
+            this.iteration += 1;
         };
-        Object.defineProperty(Particle.prototype, "horizontalMovement", {
-            get: function () {
-                return this.vx * this.dt;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(Particle.prototype, "verticalMovement", {
-            get: function () {
-                return this.vy * this.dt;
-            },
-            enumerable: true,
-            configurable: true
-        });
         return Particle;
     })(Drawing.Drawable);
     exports.Particle = Particle;    

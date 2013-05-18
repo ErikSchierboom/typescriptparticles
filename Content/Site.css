@@ -10,8 +10,10 @@ header, footer, nav, section {
     display: block;
 }
 
-canvas {
-    border: 1px dashed #000000;
+#particlesCanvas {
+    border: 1px solid #000000;
+    width: 700px;
+    height: 300px;
 }
 
 ul, li {

@@ -3,10 +3,10 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-define(["require", "exports", 'helpers/drawing', 'Particles/particle'], function(require, exports, __Drawing__, __Particle__) {
-    
-    var Drawing = __Drawing__;
+define(["require", "exports", 'helpers/vector', 'Particles/particle'], function(require, exports, __Vector__, __Particle__) {
+    var Vector = __Vector__;
 
+    
     var Particle = __Particle__;
 
     var BouncingBallParticle = (function (_super) {
@@ -17,47 +17,46 @@ define(["require", "exports", 'helpers/drawing', 'Particles/particle'], function
             this.radius = Math.random() * 20 + 5;
             this.coordinate.x = Math.random() * (paper.width - this.radius * 2) + this.radius;
             this.coordinate.y = Math.random() * (paper.height - this.radius * 2) + this.radius;
-            this.vx = (Math.random() * 2 - 1) * 40;
-            this.vy = (Math.random() * 2 - 1) * 40;
-            this.dt = 1.0 / Drawing.framesPerSecond;
-            this.color = 'hsl(' + Math.floor(Math.random() * 360) + ',100%, 50%)';
+            this.movement = new Vector.Vector2d((Math.random() * 2 - 1) * 40, (Math.random() * 2 - 1) * 40);
+            this.color = Raphael.hsl(Math.floor(Math.random() * 360), 100, 50);
         }
         BouncingBallParticle.prototype.update = function () {
             _super.prototype.update.call(this);
             if(this.shouldReverseHorizontalDirection) {
-                this.vx *= -1;
+                this.movement.x *= -1;
             }
             if(this.shouldReverseVerticalDirection) {
-                this.vy *= -1;
+                this.movement.y *= -1;
             }
         };
         BouncingBallParticle.prototype.draw = function () {
             var bouncingBall = this.paper.circle(this.coordinate.x, this.coordinate.y, this.radius);
+            bouncingBall.attr('fill', this.color);
         };
         Object.defineProperty(BouncingBallParticle.prototype, "movingToLeft", {
             get: function () {
-                return this.vx < 0;
+                return this.movement.x < 0;
             },
             enumerable: true,
             configurable: true
         });
         Object.defineProperty(BouncingBallParticle.prototype, "movingToRight", {
             get: function () {
-                return this.vx > 0;
+                return this.movement.x > 0;
             },
             enumerable: true,
             configurable: true
         });
         Object.defineProperty(BouncingBallParticle.prototype, "movingToTop", {
             get: function () {
-                return this.vy < 0;
+                return this.movement.y < 0;
             },
             enumerable: true,
             configurable: true
         });
         Object.defineProperty(BouncingBallParticle.prototype, "movingToBottom", {
             get: function () {
-                return this.vy > 0;
+                return this.movement.y > 0;
             },
             enumerable: true,
             configurable: true

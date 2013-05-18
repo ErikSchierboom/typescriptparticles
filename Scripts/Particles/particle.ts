@@ -10,25 +10,23 @@ import Drawing = module('helpers/drawing');
  */
 export class Particle extends Drawing.Drawable {
     coordinate: Vector.Vector2d = new Vector.Vector2d();
-    vx: number;
-    vy: number;
+    movement: Vector.Vector2d = new Vector.Vector2d();
     dt: number;
     color: string;
+    iteration: number = 1;
 
     // The constructor receives the RaphaelPaper instance to which it can draw
     constructor(public paper: RaphaelPaper) {
         super(paper);
+
+        this.dt = 1.0 / Drawing.framesPerSecond;
     }
 
     /**
      * Update the particle's coordinates.
      */
     public update() {
-        this.coordinate.x += this.horizontalMovement;
-        this.coordinate.y += this.verticalMovement;
+        this.coordinate = this.coordinate.add(this.movement.multiply(this.dt));
+        this.iteration += 1;
     }
-
-    // Properties for retrieving the horizontal and vertical movement
-    get horizontalMovement(): number { return this.vx * this.dt; }
-    get verticalMovement(): number { return this.vy * this.dt; }
 }

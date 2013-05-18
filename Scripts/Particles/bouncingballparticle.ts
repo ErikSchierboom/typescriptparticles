@@ -22,13 +22,10 @@ export class BouncingBallParticle extends Particle.Particle {
 
         // Create random x and y vectors that will determine where the
         // particle will be moving to
-        this.vx = (Math.random() * 2 - 1) * 40;
-        this.vy = (Math.random() * 2 - 1) * 40;
-
-        this.dt = 1.0 / Drawing.framesPerSecond;
-
+        this.movement = new Vector.Vector2d((Math.random() * 2 - 1) * 40, (Math.random() * 2 - 1) * 40);
+        
         // Give the particle a random color
-        this.color = 'hsl(' + Math.floor(Math.random() * 360) + ',100%, 50%)';
+        this.color = Raphael.hsl(Math.floor(Math.random() * 360), 100, 50);
     }
 
     public update() {
@@ -39,11 +36,11 @@ export class BouncingBallParticle extends Particle.Particle {
         // of the canvas
 
         if (this.shouldReverseHorizontalDirection) {
-            this.vx *= -1;
+            this.movement.x *= -1;
         }
 
         if (this.shouldReverseVerticalDirection) {
-            this.vy *= -1;
+            this.movement.y *= -1;
         }
     }
 
@@ -51,16 +48,15 @@ export class BouncingBallParticle extends Particle.Particle {
      * Draw the bouncing ball to the canvas.
      */
     public draw() {
-
         var bouncingBall = this.paper.circle(this.coordinate.x, this.coordinate.y, this.radius);
-        //bouncingBall.attr('fill', this.color);
+        bouncingBall.attr('fill', this.color);
     }
 
     // Properties used to retrieve the movevement direction of the particle
-    get movingToLeft(): bool { return this.vx < 0; }
-    get movingToRight(): bool { return this.vx > 0; }
-    get movingToTop(): bool { return this.vy < 0; }
-    get movingToBottom(): bool { return this.vy > 0; }
+    get movingToLeft(): bool { return this.movement.x < 0; }
+    get movingToRight(): bool { return this.movement.x > 0; }
+    get movingToTop(): bool { return this.movement.y < 0; }
+    get movingToBottom(): bool { return this.movement.y > 0; }
 
     // Properties used to determine if the bouncing ball is over a border
     get overLeftBorder(): bool { return this.coordinate.x <= this.radius; }

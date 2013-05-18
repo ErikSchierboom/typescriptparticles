@@ -9,51 +9,71 @@ import Particle = module('Particles/particle');
  */
 export class FireworkParticle extends Particle.Particle {
 
-    // The last coordinate
-    lastCoordinate: Vector.Vector2d;
+    private isRocket: bool;
+    private rocketColor: string = '#000000';
+    private particles: FireworkParticle[] = [];
+
+    // The begin coordinate. In rocket mode this is where the particle started.
+    // In explosion mode this is where the rocket exploded.
+    beginCoordinate: Vector.Vector2d;
     
-    constructor(public paper: RaphaelPaper) {
+    constructor(public paper: RaphaelPaper, coordinate?: Vector.Vector2d, isRocket?: bool = true) {
         super(paper);
 
-        // Give the particle a random coordinate that fits on the canvas
-        this.coordinate.x = this.paper.width / 2;
-        this.coordinate.y = this.paper.height / 2;
+        if (coordinate == undefined) {
+            // Give the particle a coordinate on the bottom of the canvas
+            this.coordinate = new Vector.Vector2d(this.paper.width / 2, this.paper.height);
+        }
+        else {
+            this.coordinate = coordinate;
+        }
+                
+        this.updateBeginCoordinate();
+        this.isRocket = isRocket;
 
         // Create random x and y vectors that will determine where the
         // particle will be moving to
-        this.vx = (Math.random() * 2 - 1) * 40;
-        this.vy = (Math.random() * 2 - 1) * 40;
-
-        this.dt = 1.0 / Drawing.framesPerSecond;
-
+        this.movement = new Vector.Vector2d((Math.random() * 2 - 1) * 40, this.paper.height - (Math.random() * 2 - 1) * 40);
+        
         // Give the particle a random color
-        this.color = 'hsl(' + Math.floor(Math.random() * 360) + ',100%, 50%)';
+        this.color = Raphael.hsl(Math.floor(Math.random() * 360), 100, 50);
+
+        this.particles.push(this);
     }
 
     /**
      * Draw the firework particle to the canvas.
      */
     public draw() {
-        //this.ctx.beginPath();
-        //this.ctx.moveTo(this.lastCoordinate.x, this.lastCoordinate.y);
-        //this.ctx.lineTo(this.coordinate.x, this.coordinate.y);
-        //this.ctx.closePath();
-        //this.ctx.lineWidth = 3.0;
-        //this.ctx.strokeStyle = this.color;
-        //this.ctx.stroke();
+        for (var i = 0; i < this.particles.length; ++i) {
+            var particle = this.particles[i];
+
+            var path = this.paper.path('M ' + particle.beginCoordinate.toRaphaelCoordinate() + ' L ' + particle.coordinate.toRaphaelCoordinate());
+            path.attr('stroke', this.isRocket ? this.rocketColor : particle.color);
+        }
     }
 
     public update() {
-        // Before updating the coordinate, store the current coordinate as the last coordinate
-        this.updateLastCoordinate();
+        if (this.isRocket && this.iteration == Drawing.framesPerSecond * 2) {
+            this.convertFromRocketToExplosion();
+        }
 
-        super.update();
+        for (var i = 0; i < this.particles.length; ++i) {
+            this.particles[i].update();
+        }
     }
 
-    /**
-     * As we will be drawing lines, we need to store the last coordinate.
-     */
-    private updateLastCoordinate() {
-        this.lastCoordinate = this.coordinate;
+    private convertFromRocketToExplosion() {
+        this.particles = [];
+
+        for (var i = 0; i < 50; ++i) {
+            this.particles.push(new FireworkParticle(this.paper, this.coordinate, false));
+        }
+
+        this.isRocket = false;
+    }
+
+    private updateBeginCoordinate() {
+        this.beginCoordinate = this.coordinate;
     }
 }

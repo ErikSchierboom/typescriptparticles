@@ -12,6 +12,9 @@ export class Drawable {
 
     // We don't draw anything here, this should be implemented by child classes
     public draw() { }
+
+    // Update the drawable
+    public update() { }
 }
 
 /**
@@ -31,6 +34,13 @@ export class CompositeDrawable extends Drawable {
     public draw() {
         for (var i = 0; i < this.Drawables.length; ++i) {
             this.Drawables[i].draw();
+        }
+    }
+
+    // We update all the drawables in the composite
+    public update() {
+        for (var i = 0; i < this.Drawables.length; ++i) {
+            this.Drawables[i].update();
         }
     }
 }

@@ -11,6 +11,8 @@ define(["require", "exports"], function(require, exports) {
         }
         Drawable.prototype.draw = function () {
         };
+        Drawable.prototype.update = function () {
+        };
         return Drawable;
     })();
     exports.Drawable = Drawable;    
@@ -24,6 +26,11 @@ define(["require", "exports"], function(require, exports) {
         CompositeDrawable.prototype.draw = function () {
             for(var i = 0; i < this.Drawables.length; ++i) {
                 this.Drawables[i].draw();
+            }
+        };
+        CompositeDrawable.prototype.update = function () {
+            for(var i = 0; i < this.Drawables.length; ++i) {
+                this.Drawables[i].update();
             }
         };
         return CompositeDrawable;

@@ -50,7 +50,7 @@ define(["require", "exports", 'helpers/drawing', 'Particles/bouncingballparticle
                 _super.call(this, paper);
             this.paper = paper;
             this.particleType = particleType;
-            this.numberOfParticlesToRender = 10;
+            this.numberOfParticlesToRender = 1;
             this.particleFactory = new ParticleFactory(paper);
             this.createParticles();
         }
@@ -68,12 +68,6 @@ define(["require", "exports", 'helpers/drawing', 'Particles/bouncingballparticle
             this.paper.clear();
             _super.prototype.draw.call(this);
             this.update();
-        };
-        ParticleSystem.prototype.update = function () {
-            for(var i = 0; i < this.Drawables.length; ++i) {
-                (this.Drawables[i]).update();
-            }
-            ;
         };
         ParticleSystem.prototype.startAnimating = function () {
             var _this = this;

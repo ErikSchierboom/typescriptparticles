@@ -50,7 +50,7 @@ export class ParticleSystem extends Drawing.CompositeDrawable {
     private animationHandle: number;
 
     // The number of particles to render
-    numberOfParticlesToRender: number = 10;
+    numberOfParticlesToRender: number = 1;
     
     // The factory for creating the particles
     particleFactory: ParticleFactory;
@@ -90,16 +90,9 @@ export class ParticleSystem extends Drawing.CompositeDrawable {
         // Draw the particles
         super.draw();
 
-        // Update the particles
+        // Update the particles. This will allow us to update the position of the 
+        // particles after they have been rendered to have them move on the screen
         this.update();
-    }
-
-    public update() {
-        
-        // Update the particles
-        for (var i = 0; i < this.Drawables.length; ++i) {
-            (<Particle.Particle>this.Drawables[i]).update();
-        };
     }
 
     public startAnimating() {
