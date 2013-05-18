@@ -3,8 +3,10 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-define(["require", "exports", 'Particles/particle'], function(require, exports, __Particle__) {
+define(["require", "exports", 'helpers/drawing', 'Particles/particle'], function(require, exports, __Drawing__, __Particle__) {
     
+    var Drawing = __Drawing__;
+
     var Particle = __Particle__;
 
     var FireworkParticle = (function (_super) {
@@ -16,6 +18,7 @@ define(["require", "exports", 'Particles/particle'], function(require, exports, 
             this.coordinate.y = this.paper.height / 2;
             this.vx = (Math.random() * 2 - 1) * 40;
             this.vy = (Math.random() * 2 - 1) * 40;
+            this.dt = 1.0 / Drawing.framesPerSecond;
             this.color = 'hsl(' + Math.floor(Math.random() * 360) + ',100%, 50%)';
         }
         FireworkParticle.prototype.draw = function () {

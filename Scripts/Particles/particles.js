@@ -3,7 +3,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-define(["require", "exports", 'helpers/drawing', 'Particles/bouncingballparticle', 'Particles/fireworkparticle'], function(require, exports, __Drawing__, __BouncingBallParticle__, __FireworkParticle__) {
+define(["require", "exports", 'helpers/drawing', 'Particles/bouncingballparticle', 'Particles/fireworkparticle', "animation"], function(require, exports, __Drawing__, __BouncingBallParticle__, __FireworkParticle__) {
     var Drawing = __Drawing__;
 
     
@@ -43,9 +43,9 @@ define(["require", "exports", 'helpers/drawing', 'Particles/bouncingballparticle
         return ParticleFactory;
     })();
     exports.ParticleFactory = ParticleFactory;    
-    var Particles = (function (_super) {
-        __extends(Particles, _super);
-        function Particles(paper, particleType) {
+    var ParticleSystem = (function (_super) {
+        __extends(ParticleSystem, _super);
+        function ParticleSystem(paper, particleType) {
             if (typeof particleType === "undefined") { particleType = ParticleType.BouncingBall; }
                 _super.call(this, paper);
             this.paper = paper;
@@ -54,24 +54,38 @@ define(["require", "exports", 'helpers/drawing', 'Particles/bouncingballparticle
             this.particleFactory = new ParticleFactory(paper);
             this.createParticles();
         }
-        Particles.prototype.createParticles = function () {
-            this.particles = [];
+        ParticleSystem.prototype.createParticles = function () {
+            this.Drawables = [];
             for(var i = 0; i < this.numberOfParticlesToRender; ++i) {
-                this.particles.push(this.particleFactory.create(this.particleType));
+                this.Drawables.push(this.particleFactory.create(this.particleType));
             }
             ;
         };
-        Particles.prototype.refresh = function () {
+        ParticleSystem.prototype.refresh = function () {
             this.createParticles();
         };
-        Particles.prototype.draw = function () {
-            var parent = _super.prototype;
-            this.animation = Raphael.animation({
-            }, 50, 'linear', function () {
-                parent.draw();
-            });
+        ParticleSystem.prototype.draw = function () {
+            this.paper.clear();
+            _super.prototype.draw.call(this);
+            this.update();
         };
-        return Particles;
+        ParticleSystem.prototype.update = function () {
+            for(var i = 0; i < this.Drawables.length; ++i) {
+                (this.Drawables[i]).update();
+            }
+            ;
+        };
+        ParticleSystem.prototype.startAnimating = function () {
+            var _this = this;
+            this.animationHandle = window.requestAnimationFrame(function () {
+                _this.startAnimating();
+            });
+            this.draw();
+        };
+        ParticleSystem.prototype.stopAnimating = function () {
+            window.cancelAnimationFrame(this.animationHandle);
+        };
+        return ParticleSystem;
     })(Drawing.CompositeDrawable);
-    exports.Particles = Particles;    
+    exports.ParticleSystem = ParticleSystem;    
 })

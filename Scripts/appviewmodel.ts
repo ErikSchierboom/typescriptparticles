@@ -20,7 +20,7 @@ export class AppViewModel {
     private paper: RaphaelPaper;
 
     // The particles that will be rendered to the screen
-    private particles: Particles.Particles;
+    private particleSystem: Particles.ParticleSystem;
 
     // This observable contains all the particle types
     public particleTypes = ko.observableArray(Particles.ParticleType.particleTypes);
@@ -37,12 +37,12 @@ export class AppViewModel {
         this.paper = Raphael('particlesCanvas', 700, 300);
 
         // Create the particles
-        this.particles = new Particles.Particles(this.paper);
+        this.particleSystem = new Particles.ParticleSystem(this.paper);
 
         // Update the particle type when the user has changed it and then reset
         // the rendered particles
         this.selectedParticleType.subscribe(function (newParticleType) => {
-            this.particles.particleType = newParticleType;
+            this.particleSystem.particleType = newParticleType;
             this.reset();
         });
                 
@@ -66,14 +66,14 @@ export class AppViewModel {
      */
     private startAnimating() {
         this.animating(true);
-        //this.particles.startAnimating(null);
+        this.particleSystem.startAnimating();
     }
 
     /**
      * Stop animating the particles.
      */
     private stopAnimating() {
-        //this.particles.stopAnimating();
+        this.particleSystem.stopAnimating();
         this.animating(false);
     }
 
@@ -81,6 +81,6 @@ export class AppViewModel {
      * Reset the particles that are rendered on the screen.
      */
     public reset() {        
-        this.particles.refresh();
+        this.particleSystem.refresh();
     }
 }

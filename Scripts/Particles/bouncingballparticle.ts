@@ -1,6 +1,7 @@
 ﻿/// <reference path="../libs/typings/raphael.d.ts" />
 
 import Vector = module('helpers/vector');
+import Drawing = module('helpers/drawing');
 import Particle = module('Particles/particle');
 
 /**
@@ -24,7 +25,7 @@ export class BouncingBallParticle extends Particle.Particle {
         this.vx = (Math.random() * 2 - 1) * 40;
         this.vy = (Math.random() * 2 - 1) * 40;
 
-       // this.dt = 1.0 / framesPerSecond;
+        this.dt = 1.0 / Drawing.framesPerSecond;
 
         // Give the particle a random color
         this.color = 'hsl(' + Math.floor(Math.random() * 360) + ',100%, 50%)';
@@ -51,13 +52,8 @@ export class BouncingBallParticle extends Particle.Particle {
      */
     public draw() {
 
-        this.paper.circle(this.coordinate.x, this.coordinate.y, this.radius);
-
-        //this.ctx.beginPath();
-        //this.ctx.arc(this.coordinate.x, this.coordinate.y, this.radius, 0, 2 * Math.PI, false);
-        //this.ctx.closePath();
-        //this.ctx.fillStyle = this.color;
-        //this.ctx.fill();
+        var bouncingBall = this.paper.circle(this.coordinate.x, this.coordinate.y, this.radius);
+        //bouncingBall.attr('fill', this.color);
     }
 
     // Properties used to retrieve the movevement direction of the particle

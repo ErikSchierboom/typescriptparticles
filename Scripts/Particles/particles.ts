@@ -1,5 +1,7 @@
 ﻿/// <reference path="../libs/typings/raphael.d.ts" />
 
+/// <amd-dependency path="animation" />
+
 import Drawing = module('helpers/drawing');
 import Particle = module('Particles/particle');
 import BouncingBallParticle = module('Particles/bouncingballparticle');
@@ -39,19 +41,17 @@ export class ParticleFactory {
 }
 
 /**
- * This class can render a collection of particles to the screen.
+ * This class represents a particle system.
  */
-export class Particles extends Drawing.CompositeDrawable {
+export class ParticleSystem extends Drawing.CompositeDrawable {
 
-    // The animation handle
-    animation: RaphaelAnimation;
+    // The handle returned by the requestAnimationFrame method. We will
+    // be using this handle to allow animation to be stopped.
+    private animationHandle: number;
 
     // The number of particles to render
     numberOfParticlesToRender: number = 10;
-
-    // The particles that will be rendered
-    particles: Particle[];
-
+    
     // The factory for creating the particles
     particleFactory: ParticleFactory;
 
@@ -68,11 +68,11 @@ export class Particles extends Drawing.CompositeDrawable {
     private createParticles() {
 
         // Remove the current particles
-        this.particles = [];
+        this.Drawables = [];
 
         // Add the specified number of particles
         for (var i = 0; i < this.numberOfParticlesToRender; ++i) {            
-            this.particles.push(this.particleFactory.create(this.particleType));
+            this.Drawables.push(this.particleFactory.create(this.particleType));
         };
     };
 
@@ -83,10 +83,41 @@ export class Particles extends Drawing.CompositeDrawable {
     };
 
     public draw() {
-        var parent = super;
 
-        this.animation = Raphael.animation({}, 50, 'linear', function () {
-            parent.draw();
-        });        
+        // Before we will be drawing the particles, we need to clear the paper
+        this.paper.clear();
+
+        // Draw the particles
+        super.draw();
+
+        // Update the particles
+        this.update();
+    }
+
+    public update() {
+        
+        // Update the particles
+        for (var i = 0; i < this.Drawables.length; ++i) {
+            (<Particle.Particle>this.Drawables[i]).update();
+        };
+    }
+
+    public startAnimating() {
+        // Request an animation frame for the current method. 
+        // This will cause this method to be called to render
+        // in around 60 FPS
+        this.animationHandle = window.requestAnimationFrame(function () => {
+            this.startAnimating()
+        });
+
+        // Draw to the screen        
+        this.draw();
+    }
+
+    public stopAnimating() {
+
+        // Use the animation handle we retrieve in the startAnimating method
+        // to cancel the animation
+        window.cancelAnimationFrame(this.animationHandle);
     }
 }

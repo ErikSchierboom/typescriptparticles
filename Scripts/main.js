@@ -1,8 +1,8 @@
 require.config({
     paths: {
-        'jquery': 'Libs/jquery-1.9.1.min',
-        'knockout': 'Libs/knockout-2.2.1.min',
-        'raphael': 'Libs/raphael-min'
+        'jquery': 'libs/jquery-1.9.1.min',
+        'knockout': 'libs/knockout-2.2.1.min',
+        'raphael': 'libs/raphael-min'
     },
     shim: {
         'jquery': {

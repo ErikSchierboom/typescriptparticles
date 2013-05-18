@@ -1,5 +1,7 @@
 ﻿/// <reference path="../libs/typings/raphael.d.ts" />
 
+export var framesPerSecond = 60;
+
 /**
  * Base class for classes that can be drawn.
  */

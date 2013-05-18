@@ -4,6 +4,7 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 define(["require", "exports"], function(require, exports) {
+    exports.framesPerSecond = 60;
     var Drawable = (function () {
         function Drawable(paper) {
             this.paper = paper;

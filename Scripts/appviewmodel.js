@@ -10,9 +10,9 @@ define(["require", "exports", 'Particles/particles', "knockout", "raphael"], fun
             this.selectedParticleType = ko.observable(Particles.ParticleType.BouncingBall);
             this.animating = ko.observable(false);
             this.paper = Raphael('particlesCanvas', 700, 300);
-            this.particles = new Particles.Particles(this.paper);
+            this.particleSystem = new Particles.ParticleSystem(this.paper);
             this.selectedParticleType.subscribe(function (newParticleType) {
-                _this.particles.particleType = newParticleType;
+                _this.particleSystem.particleType = newParticleType;
                 _this.reset();
             });
             this.startAnimating();
@@ -26,12 +26,14 @@ define(["require", "exports", 'Particles/particles', "knockout", "raphael"], fun
         };
         AppViewModel.prototype.startAnimating = function () {
             this.animating(true);
+            this.particleSystem.startAnimating();
         };
         AppViewModel.prototype.stopAnimating = function () {
+            this.particleSystem.stopAnimating();
             this.animating(false);
         };
         AppViewModel.prototype.reset = function () {
-            this.particles.refresh();
+            this.particleSystem.refresh();
         };
         return AppViewModel;
     })();
