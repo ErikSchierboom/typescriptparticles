@@ -1,13 +1,12 @@
 require.config({
-    baseUrl: '../',
+    baseUrl: './',
     paths: {
-        'specs': 'specifications',
-        'src': 'scripts',
-        'jquery': 'scripts/libs/jquery-1.9.1.min',
-        'knockout': 'scripts/libs/knockout-2.2.1.min',
-        'raphael': 'scripts/libs/raphael-min',
-        'jasmine': 'scripts/libs/jasmine',
-        'jasmine-html': 'scripts/libs/jasmine-html'
+        'src': '../src',
+        'jquery': '../libs/jquery-1.9.1.min',
+        'knockout': '../libs/knockout-2.2.1.min',
+        'raphael': '../libs/raphael-min',
+        'jasmine': '../libs/jasmine',
+        'jasmine-html': '../libs/jasmine-html'
     },
     shim: {
         'jquery': {
@@ -32,7 +31,7 @@ require([
     'knockout', 
     'jasmine', 
     'jasmine-html', 
-    'specs/helpers/vectorspec'
+    'specs/all'
 ], function (jQuery, ko, jasmine, jasmineHtml) {
     var jasmineEnv = jasmine.getEnv();
     jasmineEnv.updateInterval = 1000;
