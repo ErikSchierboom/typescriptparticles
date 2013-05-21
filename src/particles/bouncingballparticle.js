@@ -15,76 +15,75 @@ define(["require", "exports", 'helpers/vector', 'particles/particle'], function(
                 _super.call(this, paper);
             this.paper = paper;
             this.radius = Math.random() * 20 + 5;
-            this.coordinate.x = Math.random() * (paper.width - this.radius * 2) + this.radius;
-            this.coordinate.y = Math.random() * (paper.height - this.radius * 2) + this.radius;
-            this.movement = new Vector.Vector2d((Math.random() * 2 - 1) * 40, (Math.random() * 2 - 1) * 40);
+            this.location = new Vector.Vector2d(Math.random() * (paper.width - this.radius * 2) + this.radius, Math.random() * (paper.height - this.radius * 2) + this.radius);
+            this.velocity = new Vector.Vector2d(Math.random() * 2 - 1, Math.random() * 2 - 1);
             this.color = Raphael.hsl(Math.floor(Math.random() * 360), 100, 50);
         }
         BouncingBallParticle.prototype.update = function () {
             _super.prototype.update.call(this);
             if(this.shouldReverseHorizontalDirection) {
-                this.movement.x *= -1;
+                this.velocity.x *= -1;
             }
             if(this.shouldReverseVerticalDirection) {
-                this.movement.y *= -1;
+                this.velocity.y *= -1;
             }
         };
         BouncingBallParticle.prototype.draw = function () {
-            var bouncingBall = this.paper.circle(this.coordinate.x, this.coordinate.y, this.radius);
+            var bouncingBall = this.paper.circle(this.location.x, this.location.y, this.radius);
             bouncingBall.attr('fill', this.color);
         };
         Object.defineProperty(BouncingBallParticle.prototype, "movingToLeft", {
             get: function () {
-                return this.movement.x < 0;
+                return this.velocity.x < 0;
             },
             enumerable: true,
             configurable: true
         });
         Object.defineProperty(BouncingBallParticle.prototype, "movingToRight", {
             get: function () {
-                return this.movement.x > 0;
+                return this.velocity.x > 0;
             },
             enumerable: true,
             configurable: true
         });
         Object.defineProperty(BouncingBallParticle.prototype, "movingToTop", {
             get: function () {
-                return this.movement.y < 0;
+                return this.velocity.y < 0;
             },
             enumerable: true,
             configurable: true
         });
         Object.defineProperty(BouncingBallParticle.prototype, "movingToBottom", {
             get: function () {
-                return this.movement.y > 0;
+                return this.velocity.y > 0;
             },
             enumerable: true,
             configurable: true
         });
         Object.defineProperty(BouncingBallParticle.prototype, "overLeftBorder", {
             get: function () {
-                return this.coordinate.x <= this.radius;
+                return this.location.x <= this.radius;
             },
             enumerable: true,
             configurable: true
         });
         Object.defineProperty(BouncingBallParticle.prototype, "overRightBorder", {
             get: function () {
-                return this.coordinate.x >= this.paper.width - this.radius;
+                return this.location.x >= this.paper.width - this.radius;
             },
             enumerable: true,
             configurable: true
         });
         Object.defineProperty(BouncingBallParticle.prototype, "overTopBorder", {
             get: function () {
-                return this.coordinate.y <= this.radius;
+                return this.location.y <= this.radius;
             },
             enumerable: true,
             configurable: true
         });
         Object.defineProperty(BouncingBallParticle.prototype, "overBottomBorder", {
             get: function () {
-                return this.coordinate.y >= this.paper.height - this.radius;
+                return this.location.y >= this.paper.height - this.radius;
             },
             enumerable: true,
             configurable: true

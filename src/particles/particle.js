@@ -13,14 +13,18 @@ define(["require", "exports", 'helpers/vector', 'helpers/drawing'], function(req
         function Particle(paper) {
                 _super.call(this, paper);
             this.paper = paper;
-            this.coordinate = new Vector.Vector2d();
-            this.movement = new Vector.Vector2d();
-            this.iteration = 1;
-            this.dt = 1.0 / Drawing.FramesPerSecond;
+            this.location = new Vector.Vector2d();
+            this.velocity = new Vector.Vector2d();
+            this.acceleration = new Vector.Vector2d();
+            this.lifetime = 255;
         }
         Particle.prototype.update = function () {
-            this.coordinate = this.coordinate.add(this.movement.multiply(this.dt));
-            this.iteration += 1;
+            this.velocity.add(this.acceleration);
+            this.location.add(this.velocity);
+            this.lifetime -= 1;
+        };
+        Particle.prototype.isDead = function () {
+            return this.lifetime <= 0;
         };
         return Particle;
     })(Drawing.Drawable);

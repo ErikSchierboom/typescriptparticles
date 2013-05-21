@@ -6,20 +6,19 @@ define(["require", "exports", 'particles/particlesystem', "knockout", "raphael"]
     var AppViewModel = (function () {
         function AppViewModel() {
             var _this = this;
-            this.paperElement = 'particlesCanvas';
-            this.paperWidth = 700;
-            this.paperHeight = 300;
             this.particleTypes = ko.observableArray(Particles.ParticleType.particleTypes);
-            this.selectedParticleType = ko.observable(Particles.ParticleType.BouncingBall);
+            this.selectedParticleType = ko.observable(Particles.ParticleType.Fountain);
             this.animating = ko.observable(false);
-            this.paper = Raphael(this.paperElement, this.paperWidth, this.paperHeight);
-            this.particleSystem = new Particles.ParticleSystem(this.paper);
+            this.particleSystem = new Particles.ParticleSystem(AppViewModel.createRaphaelPaper(), this.selectedParticleType());
             this.selectedParticleType.subscribe(function (newParticleType) {
                 _this.particleSystem.particleType = newParticleType;
                 _this.reset();
             });
             this.toggleAnimating();
         }
+        AppViewModel.PaperElement = 'particlesCanvas';
+        AppViewModel.PaperWidth = 700;
+        AppViewModel.PaperHeight = 300;
         AppViewModel.prototype.toggleAnimating = function () {
             if(this.animating()) {
                 this.particleSystem.stopAnimating();
@@ -31,6 +30,9 @@ define(["require", "exports", 'particles/particlesystem', "knockout", "raphael"]
         };
         AppViewModel.prototype.reset = function () {
             this.particleSystem.refresh();
+        };
+        AppViewModel.createRaphaelPaper = function createRaphaelPaper() {
+            return Raphael(AppViewModel.PaperElement, AppViewModel.PaperWidth, AppViewModel.PaperHeight);
         };
         return AppViewModel;
     })();

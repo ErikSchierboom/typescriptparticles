@@ -16,11 +16,10 @@ var ko = require('knockout');
 export class AppViewModel {
 
     // The Raphael paper settings
-    private paperElement: string = 'particlesCanvas';
-    private paperWidth: number = 700;
-    private paperHeight: number = 300;
-    private paper: RaphaelPaper;
-
+    static PaperElement: string = 'particlesCanvas';
+    static PaperWidth: number = 700;
+    static PaperHeight: number = 300;
+    
     // The particle system that will render the particles to the screen
     private particleSystem: Particles.ParticleSystem;
 
@@ -29,19 +28,17 @@ export class AppViewModel {
     public particleTypes = ko.observableArray(Particles.ParticleType.particleTypes);
 
     // This observable contains the selected particle type, which is the particle
-    // type that is rendered
-    public selectedParticleType = ko.observable(Particles.ParticleType.BouncingBall);
+    // type that is rendered. We give it a default value which will be used to determine
+    // what particles to start rendering immediately
+    public selectedParticleType = ko.observable(Particles.ParticleType.Fountain);
 
     // This observable will indicate if we are currently animating
     public animating = ko.observable(false);
 
     constructor() {
-
-        // Create the Raphael paper on which all drawing will be done
-        this.paper = Raphael(this.paperElement, this.paperWidth, this.paperHeight);
-
+        
         // Create the particle system that will draw the particles to the paper
-        this.particleSystem = new Particles.ParticleSystem(this.paper);
+        this.particleSystem = new Particles.ParticleSystem(AppViewModel.createRaphaelPaper(), this.selectedParticleType());
 
         // Update the particle type when the user has changed it and then reset
         // the rendered particles to have the change be reflected immediately
@@ -73,5 +70,12 @@ export class AppViewModel {
      */
     public reset() {        
         this.particleSystem.refresh();
+    }
+
+    /**
+     * Create a RaphaelPaper instance to which will be drawn.
+     */
+    private static createRaphaelPaper() {
+        return Raphael(AppViewModel.PaperElement, AppViewModel.PaperWidth, AppViewModel.PaperHeight);
     }
 }

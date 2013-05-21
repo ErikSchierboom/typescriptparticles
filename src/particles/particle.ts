@@ -9,24 +9,29 @@ import Drawing = module('helpers/drawing');
  * Drawable class to render the particle to the screen.
  */
 export class Particle extends Drawing.Drawable {
-    coordinate: Vector.Vector2d = new Vector.Vector2d();
-    movement: Vector.Vector2d = new Vector.Vector2d();
-    dt: number;
+    location: Vector.Vector2d = new Vector.Vector2d();
+    velocity: Vector.Vector2d = new Vector.Vector2d();
+    acceleration: Vector.Vector2d = new Vector.Vector2d();
+    lifetime: number = 255;
     color: string;
-    iteration: number = 1;
-
-    // The constructor receives the RaphaelPaper instance to which it can draw
+    
     constructor(public paper: RaphaelPaper) {
         super(paper);
-
-        this.dt = 1.0 / Drawing.FramesPerSecond;
     }
 
     /**
-     * Update the particle's coordinates.
+     * Update the particle's vectors and age.
      */
     public update() {
-        this.coordinate = this.coordinate.add(this.movement.multiply(this.dt));
-        this.iteration += 1;
+        this.velocity.add(this.acceleration);
+        this.location.add(this.velocity);
+        this.lifetime -= 1;
+    }
+
+    /**
+     * Indicates if the particle is dead.
+     */
+    public isDead() {
+        return this.lifetime <= 0;
     }
 }
