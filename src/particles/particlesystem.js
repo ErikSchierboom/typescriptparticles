@@ -81,6 +81,9 @@ define(["require", "exports", 'helpers/drawing', 'particles/fountainparticle', '
             for(var i = 0; i < this.Drawables.length; ++i) {
                 var particle = this.Drawables[i];
                 particle.update();
+                if(particle.isDead) {
+                    this.Drawables[i] = this.createParticle();
+                }
             }
         };
         return ParticleSystem;

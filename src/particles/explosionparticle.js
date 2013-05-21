@@ -3,9 +3,12 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-define(["require", "exports", 'helpers/vector', 'particles/particle'], function(require, exports, __Vector__, __Particle__) {
+define(["require", "exports", 'helpers/color', 'helpers/vector', 'particles/particle'], function(require, exports, __Color__, __Vector__, __Particle__) {
+    var Color = __Color__;
+
     var Vector = __Vector__;
 
+    
     
     var Particle = __Particle__;
 
@@ -16,17 +19,14 @@ define(["require", "exports", 'helpers/vector', 'particles/particle'], function(
             this.paper = paper;
             this.acceleration = new Vector.Vector2d(0, 0.05);
             this.radius = Math.random() + 5;
-            this.location = new Vector.Vector2d(this.paper.width / 2, this.paper.height / 4);
-            this.velocity = new Vector.Vector2d(Math.random() * 2 - 1, Math.random() * 2 - 2);
+            this.location = new Vector.Vector2d(this.paper.width / 2, this.paper.height / 2);
+            this.velocity = new Vector.Vector2d((Math.random() * 8 - 4), Math.random() * 8 - 4);
             this.hue = Math.floor(Math.random() * 60);
-            this.color = Raphael.hsl(this.hue, ExplosionParticle.saturation, ExplosionParticle.lightness);
+            this.color = new Color.Color(this.hue);
         }
-        ExplosionParticle.saturation = 100;
-        ExplosionParticle.lightness = 50;
         ExplosionParticle.prototype.draw = function () {
-            this.color = Raphael.hsl(this.hue, ExplosionParticle.saturation, ExplosionParticle.lightness);
             var explosionCircle = this.paper.circle(this.location.x, this.location.y, this.radius);
-            explosionCircle.attr('fill', this.color);
+            explosionCircle.attr('fill', this.color.toRaphaelString());
         };
         return ExplosionParticle;
     })(Particle.Particle);

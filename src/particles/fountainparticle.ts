@@ -1,6 +1,8 @@
 ﻿/// <reference path="../../libs/raphael.d.ts" />
 
+import Color = module('helpers/color');
 import Vector = module('helpers/vector');
+import Random = module('helpers/random');
 import Drawing = module('helpers/drawing');
 import Particle = module('particles/particle');
 
@@ -8,14 +10,8 @@ import Particle = module('particles/particle');
  * This class extends the Particle class to creating an fountain particle.
  */
 export class FountainParticle extends Particle.Particle {
-
-    // The radius of the explosion particle
-    radius: number;
-
-    hue: number;
-
-    static saturation: number = 100;
-    static lightness: number = 50;
+    
+    static Hue: number = 20;
 
     constructor(public paper: RaphaelPaper) {
         super(paper);
@@ -31,21 +27,23 @@ export class FountainParticle extends Particle.Particle {
 
         // Give the explosion particle a random velocity
         this.velocity = new Vector.Vector2d(Math.random() * 2 - 1, Math.random() * 2 - 2);
-        
-        // Give the particle a random hue which is in the red color range
-        this.hue = Math.floor(Math.random() * 60);
-
-        this.color = Raphael.hsl(this.hue, FountainParticle.saturation, FountainParticle.lightness);
+     
+        // Give the particle a color
+        this.color = new Color.Color(FountainParticle.Hue);
     }
 
     /**
-     * Draw the explosion particle to the canvas.
+     * Draw the fountain particle to the canvas.
      */
     public draw() {
+        var fountainCircle = this.paper.circle(this.location.x, this.location.y, this.radius);
+        fountainCircle.attr('fill', this.color.toRaphaelString());
+    }
 
-        this.color = Raphael.hsl(this.hue, FountainParticle.saturation, FountainParticle.lightness);
-
-        var explosionCircle = this.paper.circle(this.location.x, this.location.y, this.radius);
-        explosionCircle.attr('fill', this.color);
+    /**
+     * Indicates if the particle is dead.
+     */
+    public get isDead() {
+        return this.overBottomBorder;
     }
 }

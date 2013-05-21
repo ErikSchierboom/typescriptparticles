@@ -1,6 +1,8 @@
 ﻿/// <reference path="../../libs/raphael.d.ts" />
 
+import Color = module('helpers/color');
 import Vector = module('helpers/vector');
+import Random = module('helpers/random');
 import Drawing = module('helpers/drawing');
 import Particle = module('particles/particle');
 
@@ -8,8 +10,6 @@ import Particle = module('particles/particle');
  * This class extends the Particle class to creating a bouncing ball particle.
  */
 export class BouncingBallParticle extends Particle.Particle {
-    radius: number;
-
     constructor(public paper: RaphaelPaper) {
         super(paper);
     
@@ -19,12 +19,11 @@ export class BouncingBallParticle extends Particle.Particle {
         // Give the particle a random coordinate that fits on the canvas
         this.location = new Vector.Vector2d(Math.random() * (paper.width - this.radius * 2) + this.radius, Math.random() * (paper.height - this.radius * 2) + this.radius);
 
-        // Create random x and y vectors that will determine where the
-        // particle will be moving to
+        // Create random velocity
         this.velocity = new Vector.Vector2d(Math.random() * 2 - 1, Math.random() * 2 - 1);
         
         // Give the particle a random color
-        this.color = Raphael.hsl(Math.floor(Math.random() * 360), 100, 50);
+        this.color = new Color.Color(Math.floor(Math.random() * 360));
     }
 
     public update() {
@@ -47,20 +46,8 @@ export class BouncingBallParticle extends Particle.Particle {
      */
     public draw() {
         var bouncingBall = this.paper.circle(this.location.x, this.location.y, this.radius);
-        bouncingBall.attr('fill', this.color);
+        bouncingBall.attr('fill', this.color.toRaphaelString());
     }
-
-    // Properties used to retrieve the movement direction of the particle
-    get movingToLeft(): bool { return this.velocity.x < 0; }
-    get movingToRight(): bool { return this.velocity.x > 0; }
-    get movingToTop(): bool { return this.velocity.y < 0; }
-    get movingToBottom(): bool { return this.velocity.y > 0; }
-
-    // Properties used to determine if the bouncing ball is over a border
-    get overLeftBorder(): bool { return this.location.x <= this.radius; }
-    get overRightBorder(): bool { return this.location.x >= this.paper.width - this.radius; }
-    get overTopBorder(): bool { return this.location.y <= this.radius; }
-    get overBottomBorder(): bool { return this.location.y >= this.paper.height - this.radius; }
 
     /**
      * Indicates if the particle should reverse its horizontal direction due

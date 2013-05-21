@@ -123,6 +123,11 @@ export class ParticleSystem extends Drawing.CompositeDrawable {
             // containing their base Drawable type
             var particle = <Particle.Particle>this.Drawables[i];
             particle.update();
+
+            // If the particle is dead, replace it with a new particle
+            if (particle.isDead) {
+                this.Drawables[i] = this.createParticle();
+            }
         }
     }
 }
