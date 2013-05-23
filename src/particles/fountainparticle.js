@@ -3,12 +3,13 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-define(["require", "exports", 'helpers/color', 'helpers/vector', 'particles/particle'], function(require, exports, __Color__, __Vector__, __Particle__) {
+define(["require", "exports", 'helpers/color', 'helpers/vector', 'helpers/random', 'particles/particle'], function(require, exports, __Color__, __Vector__, __Random__, __Particle__) {
     var Color = __Color__;
 
     var Vector = __Vector__;
 
-    
+    var Random = __Random__;
+
     
     var Particle = __Particle__;
 
@@ -17,24 +18,28 @@ define(["require", "exports", 'helpers/color', 'helpers/vector', 'particles/part
         function FountainParticle(paper) {
                 _super.call(this, paper);
             this.paper = paper;
-            this.acceleration = new Vector.Vector2d(0, 0.05);
-            this.radius = Math.random() + 5;
-            this.location = new Vector.Vector2d(this.paper.width / 2, this.paper.height / 4);
-            this.velocity = new Vector.Vector2d(Math.random() * 2 - 1, Math.random() * 2 - 2);
-            this.color = new Color.Color(FountainParticle.Hue);
         }
-        FountainParticle.Hue = 20;
-        FountainParticle.prototype.draw = function () {
-            var fountainCircle = this.paper.circle(this.location.x, this.location.y, this.radius);
-            fountainCircle.attr('fill', this.color.toRaphaelString());
+        FountainParticle.prototype.isDead = function () {
+            return this.location.y >= this.paper.height - this.radius;
         };
-        Object.defineProperty(FountainParticle.prototype, "isDead", {
-            get: function () {
-                return this.overBottomBorder;
-            },
-            enumerable: true,
-            configurable: true
-        });
+        FountainParticle.prototype.getInitialRadius = function () {
+            return Random.Random.inRange(5, 6);
+        };
+        FountainParticle.prototype.getInitialAcceleration = function () {
+            return new Vector.Vector2d(0, 0.05);
+        };
+        FountainParticle.prototype.getInitialLocation = function () {
+            return new Vector.Vector2d(this.paper.width / 2, this.paper.height / 4);
+        };
+        FountainParticle.prototype.getInitialVelocity = function () {
+            return new Vector.Vector2d(Random.Random.inRange(-1, 1), Random.Random.inRange(-2, 0));
+        };
+        FountainParticle.prototype.getInitialColor = function () {
+            return new Color.Color(20);
+        };
+        FountainParticle.prototype.getOpacity = function () {
+            return 1.0 - Math.max(0, this.age / 100);
+        };
         return FountainParticle;
     })(Particle.Particle);
     exports.FountainParticle = FountainParticle;    

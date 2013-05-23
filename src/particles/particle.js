@@ -17,74 +17,48 @@ define(["require", "exports", 'helpers/vector', 'helpers/drawing'], function(req
             this.location = new Vector.Vector2d();
             this.velocity = new Vector.Vector2d();
             this.acceleration = new Vector.Vector2d();
+            this.age = 0;
+            this.reset();
         }
+        Particle.prototype.draw = function () {
+            var particleAsCircle = this.paper.circle(this.location.x, this.location.y, this.radius);
+            particleAsCircle.attr('fill', this.color.toRaphaelString());
+            particleAsCircle.attr('fill-opacity', this.getOpacity());
+        };
+        Particle.prototype.reset = function () {
+            this.radius = this.getInitialRadius();
+            this.location = this.getInitialLocation();
+            this.acceleration = this.getInitialAcceleration();
+            this.velocity = this.getInitialVelocity();
+            this.color = this.getInitialColor();
+            this.age = 0;
+        };
         Particle.prototype.update = function () {
             this.velocity.add(this.acceleration);
             this.location.add(this.velocity);
+            this.age += 1;
         };
-        Object.defineProperty(Particle.prototype, "isDead", {
-            get: function () {
-                return false;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(Particle.prototype, "movingToLeft", {
-            get: function () {
-                return this.velocity.x < 0;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(Particle.prototype, "movingToRight", {
-            get: function () {
-                return this.velocity.x > 0;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(Particle.prototype, "movingToTop", {
-            get: function () {
-                return this.velocity.y < 0;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(Particle.prototype, "movingToBottom", {
-            get: function () {
-                return this.velocity.y > 0;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(Particle.prototype, "overLeftBorder", {
-            get: function () {
-                return this.location.x <= this.radius;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(Particle.prototype, "overRightBorder", {
-            get: function () {
-                return this.location.x >= this.paper.width - this.radius;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(Particle.prototype, "overTopBorder", {
-            get: function () {
-                return this.location.y <= this.radius;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(Particle.prototype, "overBottomBorder", {
-            get: function () {
-                return this.location.y >= this.paper.height - this.radius;
-            },
-            enumerable: true,
-            configurable: true
-        });
+        Particle.prototype.getOpacity = function () {
+            return 1.0;
+        };
+        Particle.prototype.isDead = function () {
+            throw 'You should override this method in the descendant class.';
+        };
+        Particle.prototype.getInitialRadius = function () {
+            throw 'You should override this method in the descendant class.';
+        };
+        Particle.prototype.getInitialAcceleration = function () {
+            throw 'You should override this method in the descendant class.';
+        };
+        Particle.prototype.getInitialLocation = function () {
+            throw 'You should override this method in the descendant class.';
+        };
+        Particle.prototype.getInitialVelocity = function () {
+            throw 'You should override this method in the descendant class.';
+        };
+        Particle.prototype.getInitialColor = function () {
+            throw 'You should override this method in the descendant class.';
+        };
         return Particle;
     })(Drawing.Drawable);
     exports.Particle = Particle;    

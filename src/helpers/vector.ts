@@ -13,14 +13,6 @@ export class Vector2d {
     }
 
     /**
-     * Multiply this vector with a number.
-     */
-    public multiply(mult: number) {
-        this.x *= mult;
-        this.y *= mult;
-    }
-
-    /**
      * Convert this instance to a Raphael-compatible coordinate.
      */
     public toRaphaelCoordinate() {

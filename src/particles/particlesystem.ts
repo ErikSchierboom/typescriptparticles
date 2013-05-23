@@ -5,7 +5,6 @@
 import Drawing = module('helpers/drawing');
 import Particle = module('particles/particle');
 import FountainParticle = module('particles/fountainparticle');
-import BouncingBallParticle = module('particles/bouncingballparticle');
 import ExplosionParticle = module('particles/explosionparticle');
 
 /**
@@ -15,14 +14,13 @@ import ExplosionParticle = module('particles/explosionparticle');
  */
 export class ParticleType {
     static Fountain: string = "Fountain";
-    static Explosion: string = "Explosion";
-    static BouncingBall: string = "Bouncing balls";    
+    static Explosion: string = "Explosion";   
     
     /**
      * Define the particle types as a property.
      */
     static get particleTypes(): string[] {
-        return [Fountain, Explosion, BouncingBall];
+        return [Fountain, Explosion];
     }
 }
 
@@ -61,9 +59,6 @@ export class ParticleSystem extends Drawing.CompositeDrawable {
 
         if (this.particleType == ParticleType.Fountain) {
             return new FountainParticle.FountainParticle(this.paper);
-        }
-        else if (this.particleType == ParticleType.BouncingBall) {
-            return new BouncingBallParticle.BouncingBallParticle(this.paper);
         }
         else if (this.particleType == ParticleType.Explosion) {
             return new ExplosionParticle.ExplosionParticle(this.paper);
@@ -117,16 +112,20 @@ export class ParticleSystem extends Drawing.CompositeDrawable {
      * particle being updated.
      */
     private update() {
-        for (var i = 0; i < this.Drawables.length; ++i) {
 
-            // We need to do a cast as the particles are stored in array
-            // containing their base Drawable type
-            var particle = <Particle.Particle>this.Drawables[i];
+        // We need to do a cast as the particles are stored in array
+        // containing their base Drawable type
+        var particles = <Particle.Particle[]>this.Drawables;
+
+        for (var i = 0; i < particles.length; ++i) {
+            // Update the particle
+            var particle = particles[i];
             particle.update();
 
-            // If the particle is dead, replace it with a new particle
-            if (particle.isDead) {
-                this.Drawables[i] = this.createParticle();
+            // If the particle is dead, reset. This way we will recycle the
+            // existing particles which gives a performance boost
+            if (particle.isDead()) {
+                particle.reset();
             }
         }
     }

@@ -11,34 +11,51 @@ import Particle = module('particles/particle');
  */
 export class ExplosionParticle extends Particle.Particle {
     
-    hue: number;
+    static MaximumAge: number = 200;
 
     constructor(public paper: RaphaelPaper) {
         super(paper);
-        
-        // Set the accelation of the particle. This will allow us to simulate gravity
-        this.acceleration = new Vector.Vector2d(0, 0.05);
-
-        // Generate a random radius
-        this.radius = Math.random() + 5;
-        
-        // Position the particle in the middle-top of the canvas
-        this.location = new Vector.Vector2d(this.paper.width / 2, this.paper.height / 2);
-
-        // Give the explosion particle a random velocity
-        this.velocity = new Vector.Vector2d((Math.random() * 8 - 4), Math.random() * 8 - 4);
-        
-        // Give the particle a random hue which is in the red color range
-        this.hue = Math.floor(Math.random() * 60);
-
-        this.color = new Color.Color(this.hue);
+    }
+    
+    /**
+     * Indicates if the particle is dead.
+     */
+    public isDead() {
+        return this.age >= ExplosionParticle.MaximumAge;
     }
 
     /**
-     * Draw the explosion particle to the canvas.
+     * Get the initial radius of the particle.
      */
-    public draw() {
-        var explosionCircle = this.paper.circle(this.location.x, this.location.y, this.radius);
-        explosionCircle.attr('fill', this.color.toRaphaelString());
+    public getInitialRadius() {
+        return Random.Random.inRange(5, 6);
+    }
+
+    /**
+     * Get the initial acceleration of the particle.
+     */
+    public getInitialAcceleration() {
+        return new Vector.Vector2d(0, 0.05);
+    }
+
+    /**
+     * Get the initial location of the particle.
+     */
+    public getInitialLocation() {
+        return new Vector.Vector2d(this.paper.width / 2, this.paper.height / 2);
+    }
+
+    /**
+     * Get the initial velocity of the particle.
+     */
+    public getInitialVelocity() {
+        return new Vector.Vector2d(Random.Random.inRange(-4, 4), Random.Random.inRange(-4, 4));
+    }
+
+    /**
+     * Get the initial color of the particle.
+     */
+    public getInitialColor() {
+        return new Color.Color(Math.floor(Random.Random.inRange(0, 60)));
     }
 }

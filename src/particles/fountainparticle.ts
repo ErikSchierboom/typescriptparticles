@@ -11,39 +11,58 @@ import Particle = module('particles/particle');
  */
 export class FountainParticle extends Particle.Particle {
     
-    static Hue: number = 20;
-
     constructor(public paper: RaphaelPaper) {
         super(paper);
-        
-        // Set the accelation of the particle. This will allow us to simulate gravity
-        this.acceleration = new Vector.Vector2d(0, 0.05);
-
-        // Generate a random radius
-        this.radius = Math.random() + 5;
-        
-        // Position the particle in the middle-top of the canvas
-        this.location = new Vector.Vector2d(this.paper.width / 2, this.paper.height / 4);
-
-        // Give the explosion particle a random velocity
-        this.velocity = new Vector.Vector2d(Math.random() * 2 - 1, Math.random() * 2 - 2);
-     
-        // Give the particle a color
-        this.color = new Color.Color(FountainParticle.Hue);
-    }
-
-    /**
-     * Draw the fountain particle to the canvas.
-     */
-    public draw() {
-        var fountainCircle = this.paper.circle(this.location.x, this.location.y, this.radius);
-        fountainCircle.attr('fill', this.color.toRaphaelString());
     }
 
     /**
      * Indicates if the particle is dead.
      */
-    public get isDead() {
-        return this.overBottomBorder;
+    public isDead() {
+
+        // Fountain particles die when they fall off the bottom of the paper
+        return this.location.y >= this.paper.height - this.radius;
+    }
+
+    /**
+     * Get the initial radius of the particle.
+     */
+    public getInitialRadius() {
+        return Random.Random.inRange(5, 6);
+    }
+
+    /**
+     * Get the initial acceleration of the particle.
+     */
+    public getInitialAcceleration() {
+        return new Vector.Vector2d(0, 0.05);
+    }
+
+    /**
+     * Get the initial location of the particle.
+     */
+    public getInitialLocation() {
+        return new Vector.Vector2d(this.paper.width / 2, this.paper.height / 4);
+    }
+
+    /**
+     * Get the initial velocity of the particle.
+     */
+    public getInitialVelocity() {
+        return new Vector.Vector2d(Random.Random.inRange(-1, 1), Random.Random.inRange(-2, 0));
+    }
+
+    /**
+     * Get the initial color of the particle.
+     */
+    public getInitialColor() {
+        return new Color.Color(20);
+    }
+
+    /**
+     * Get the opacity.
+     */
+    public getOpacity() {
+        return 1.0 - Math.max(0, this.age / 100);
     }
 }

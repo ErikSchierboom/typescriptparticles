@@ -3,13 +3,11 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-define(["require", "exports", 'helpers/drawing', 'particles/fountainparticle', 'particles/bouncingballparticle', 'particles/explosionparticle', "animation"], function(require, exports, __Drawing__, __FountainParticle__, __BouncingBallParticle__, __ExplosionParticle__) {
+define(["require", "exports", 'helpers/drawing', 'particles/fountainparticle', 'particles/explosionparticle', "animation"], function(require, exports, __Drawing__, __FountainParticle__, __ExplosionParticle__) {
     var Drawing = __Drawing__;
 
     
     var FountainParticle = __FountainParticle__;
-
-    var BouncingBallParticle = __BouncingBallParticle__;
 
     var ExplosionParticle = __ExplosionParticle__;
 
@@ -17,13 +15,11 @@ define(["require", "exports", 'helpers/drawing', 'particles/fountainparticle', '
         function ParticleType() { }
         ParticleType.Fountain = "Fountain";
         ParticleType.Explosion = "Explosion";
-        ParticleType.BouncingBall = "Bouncing balls";
         Object.defineProperty(ParticleType, "particleTypes", {
             get: function () {
                 return [
                     ParticleType.Fountain, 
-                    ParticleType.Explosion, 
-                    ParticleType.BouncingBall
+                    ParticleType.Explosion
                 ];
             },
             enumerable: true,
@@ -52,8 +48,6 @@ define(["require", "exports", 'helpers/drawing', 'particles/fountainparticle', '
         ParticleSystem.prototype.createParticle = function () {
             if(this.particleType == ParticleType.Fountain) {
                 return new FountainParticle.FountainParticle(this.paper);
-            } else if(this.particleType == ParticleType.BouncingBall) {
-                return new BouncingBallParticle.BouncingBallParticle(this.paper);
             } else if(this.particleType == ParticleType.Explosion) {
                 return new ExplosionParticle.ExplosionParticle(this.paper);
             }
@@ -78,11 +72,12 @@ define(["require", "exports", 'helpers/drawing', 'particles/fountainparticle', '
             window.cancelAnimationFrame(this.animationHandle);
         };
         ParticleSystem.prototype.update = function () {
-            for(var i = 0; i < this.Drawables.length; ++i) {
-                var particle = this.Drawables[i];
+            var particles = this.Drawables;
+            for(var i = 0; i < particles.length; ++i) {
+                var particle = particles[i];
                 particle.update();
-                if(particle.isDead) {
-                    this.Drawables[i] = this.createParticle();
+                if(particle.isDead()) {
+                    particle.reset();
                 }
             }
         };

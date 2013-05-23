@@ -9,6 +9,7 @@ define(["require", "exports"], function(require, exports) {
             this.paper = paper;
         }
         Drawable.prototype.draw = function () {
+            throw 'You should override this method in the descendant class.';
         };
         return Drawable;
     })();

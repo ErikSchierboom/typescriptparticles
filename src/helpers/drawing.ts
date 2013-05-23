@@ -13,6 +13,7 @@ export class Drawable {
      */
     public draw() {
         // We don't draw anything here; this should be implemented by child classes
+        throw 'You should override this method in the descendant class.';
     }
 }
 

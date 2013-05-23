@@ -10,10 +10,6 @@ define(["require", "exports"], function(require, exports) {
             this.x += vector.x;
             this.y += vector.y;
         };
-        Vector2d.prototype.multiply = function (mult) {
-            this.x *= mult;
-            this.y *= mult;
-        };
         Vector2d.prototype.toRaphaelCoordinate = function () {
             return this.x + ' ' + this.y;
         };
